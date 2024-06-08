@@ -1,10 +1,4 @@
-#include <stdio.h>
 #include "board.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-#include "clock_config.h"
-#include "LPC845.h"
-#include "fsl_debug_console.h"
 
 // Pin para el LED azul
 #define LED_BLUE	1
