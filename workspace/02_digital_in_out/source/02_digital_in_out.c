@@ -1,10 +1,5 @@
-#include <stdio.h>
 #include "board.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-#include "clock_config.h"
 #include "LPC845.h"
-#include "fsl_debug_console.h"
 
 // Etiqueta para el pulsador USER
 #define USER_BTN	4
@@ -18,7 +13,6 @@ int main(void) {
 
 	// Inicializacion
     BOARD_InitBootClocks();
-    BOARD_InitDebugConsole();
 
     // Estructura de configuracion para salida
     gpio_pin_config_t out_config = { kGPIO_DigitalOutput, 1 };
