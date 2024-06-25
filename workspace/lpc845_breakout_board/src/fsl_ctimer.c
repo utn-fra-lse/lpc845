@@ -532,8 +532,8 @@ static void CTIMER_GenericIRQHandler(uint32_t index)
 
 /* IRQ handler functions overloading weak symbols in the startup */
 #if defined(CTIMER0)
-void CTIMER0_DriverIRQHandler(void);
-void CTIMER0_DriverIRQHandler(void)
+void CTIMER0_IRQHandler(void);
+void CTIMER0_IRQHandler(void)
 {
     CTIMER_GenericIRQHandler(0);
     SDK_ISR_EXIT_BARRIER;
