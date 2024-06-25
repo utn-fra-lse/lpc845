@@ -91,7 +91,7 @@ int main(void) {
 /**
  * @brief Handler para la interrupcion del ADC Sequence A
  */
-void ADC0_SEQA_IRQHandler(void) {
+void ADC_SEQA_IRQHandler(void) {
 	// Verifico que se haya terminado la conversion correctamente
 	if(kADC_ConvSeqAInterruptFlag == (kADC_ConvSeqAInterruptFlag & ADC_GetStatusFlags(ADC0))) {
 		// Limpio flag de interrupcion
@@ -100,4 +100,3 @@ void ADC0_SEQA_IRQHandler(void) {
 		adc_conversion_done = true;
 	}
 }
-
