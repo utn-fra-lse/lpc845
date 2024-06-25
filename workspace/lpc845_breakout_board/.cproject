@@ -35,20 +35,13 @@
 								<option id="com.crt.advproject.gcc.arch.1139278229" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.618584337" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
-									<listOptionValue builtIn="false" value="__CODE_RED"/>
 									<listOptionValue builtIn="false" value="__REDLIB__"/>
-									<listOptionValue builtIn="false" value="CORE_M0PLUS"/>
-									<listOptionValue builtIn="false" value="__LPC84X__"/>
 									<listOptionValue builtIn="false" value="CPU_LPC845M301JBD48"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.909274753" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.574037905" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common" valueType="string"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.975335123" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/boards}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/components}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/devices}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/drivers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/cmsis}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/inc}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.gcc.hdrlib.305639848" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" useByScannerDiscovery="false" value="Redlib" valueType="enumerated"/>
 								<option id="com.crt.advproject.gcc.lib.debug.option.optimization.level.229221590" name="Optimization Level" superClass="com.crt.advproject.gcc.lib.debug.option.optimization.level" useByScannerDiscovery="true"/>
@@ -59,13 +52,9 @@
 								<option id="com.crt.advproject.gas.arch.1128062661" name="Architecture" superClass="com.crt.advproject.gas.arch" value="com.crt.advproject.gas.target.cm0" valueType="enumerated"/>
 								<option id="gnu.both.asm.option.flags.crt.1441571040" name="Assembler flags" superClass="gnu.both.asm.option.flags.crt" value="-c -x assembler-with-cpp -D__REDLIB__ -DDEBUG -D__CODE_RED -DCORE_M0PLUS -D__LPC84X__" valueType="string"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.both.asm.option.include.paths.918754182" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/boards}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/components}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/devices}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/drivers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/cmsis}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/inc}&quot;"/>
 								</option>
-								<option id="com.crt.advproject.gas.hdrlib.265413931" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" value="Redlib" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.hdrlib.265413931" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" value="com.crt.advproject.gas.hdrlib.codered" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.779869919" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="com.crt.advproject.assembler.input.1065091227" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
 							</tool>
@@ -73,10 +62,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="devices"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -118,6 +104,7 @@
 									<listOptionValue builtIn="false" value="CORE_M0PLUS"/>
 									<listOptionValue builtIn="false" value="__LPC84X__"/>
 									<listOptionValue builtIn="false" value="CPU_LPC845M301JBD48"/>
+									<listOptionValue builtIn="false" value="DCPU_LPC845M301JBD48"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.260800557" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1593003270" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common" valueType="string"/>
@@ -129,6 +116,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/devices}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/drivers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/cmsis}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/inc}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.gcc.hdrlib.559338059" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" useByScannerDiscovery="false" value="Redlib" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.1215363141" superClass="com.crt.advproject.compiler.input"/>
@@ -145,6 +133,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/devices}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/drivers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/cmsis}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc845_breakout_board/inc}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.gas.hdrlib.805830897" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" value="Redlib" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1841701178" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
