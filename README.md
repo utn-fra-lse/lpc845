@@ -18,3 +18,4 @@ Ejemplos que van a encontrar en este directorio incluyen:
 | [10_timer](workspace/10_timer) | Blinkeo de LEDs por interrupcion de Timer
 | [11_sct_pwm](workspace/11_sct_pwm) | Control de PWM por consola para el LED azul
 | [12_dac](workspace/12_dac) | Generacion de una triangular de 50 Hz con el DAC
+| [13_iap](workspace/13_iap) | Grabado de una cadena de caracteres en la memoria Flash
