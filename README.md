@@ -19,3 +19,4 @@ Ejemplos que van a encontrar en este directorio incluyen:
 | [11_sct_pwm](workspace/11_sct_pwm) | Control de PWM por consola para el LED azul
 | [12_dac](workspace/12_dac) | Generacion de una triangular de 50 Hz con el DAC
 | [13_iap](workspace/13_iap) | Grabado de una cadena de caracteres en la memoria Flash
+| [15_freertos_blinky](workspace/15_freertos_blinky) | Conmutacion de un LED con FreeRTOS
