@@ -17,6 +17,13 @@ void wrapper_display_write(uint8_t number);
 // Funciones inline
 
 /**
+ * @brief Wrapper para inicializacion de puerto
+ */
+static inline void wrapper_gpio_init(uint8_t port) {
+	GPIO_PortInit(GPIO, port);
+}
+
+/**
  * @brief Obtiene el valor de un boton
  * @param btn el numero de pin del boton
  * @return estado del pin
