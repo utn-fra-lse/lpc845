@@ -14,4 +14,34 @@ void wrapper_btn_init(void);
 void wrapper_display_init(void);
 void wrapper_display_write(uint8_t number);
 
+// Funciones inline
+
+/**
+ * @brief Obtiene el valor de un boton
+ * @param btn el numero de pin del boton
+ * @return estado del pin
+ */
+static inline bool wrapper_btn_get(uint32_t btn) {
+
+	return (bool) GPIO_PinRead(GPIO, 0, btn);
+}
+
+/**
+ * @brief Apaga ambos displays
+ */
+static inline void wrapper_display_off(void) {
+	// Pongo en uno ambos anodos
+	GPIO_PinWrite(GPIO, 0, COM_1, 1);
+	GPIO_PinWrite(GPIO, 0, COM_2, 1);
+}
+
+/**
+ * @brief Prende el digito del display
+ * @param com pin conectado al comun del display
+ */
+static inline void wrapper_display_on(uint8_t com) {
+	// Pongo un cero en el anodo
+	GPIO_PinWrite(GPIO, 0, com, 0);
+}
+
 #endif
