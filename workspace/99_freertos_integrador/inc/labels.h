@@ -18,4 +18,9 @@
 #define COM_1	8
 #define COM_2	9
 
+// Etiquetas de botones
+
+#define USR_BTN		4
+#define ISP_BTN		12
+
 #endif
