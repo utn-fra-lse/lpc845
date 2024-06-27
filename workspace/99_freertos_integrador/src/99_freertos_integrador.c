@@ -11,6 +11,8 @@ int main(void) {
 	// Clock del sistema a 30 MHz
 	BOARD_BootClockFRO30M();
 
+	// Inicializacion de GPIO
+	wrapper_gpio_init(0);
 	// Configuro el ADC
 	wrapper_adc_init();
 	// Configuro el display
