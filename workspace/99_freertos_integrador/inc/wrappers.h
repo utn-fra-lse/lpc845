@@ -10,5 +10,6 @@
 
 // Prototipos
 void wrapper_adc_init(void);
+void wrapper_display_init(void);
 
 #endif
