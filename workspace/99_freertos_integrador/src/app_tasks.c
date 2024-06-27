@@ -9,6 +9,8 @@ xQueueHandle queue_adc;
 void task_init(void *params) {
 	// Configuro el ADC
 	wrapper_adc_init();
+	// Configuro el display
+	wrapper_display_init();
 
 	// Elimino la tarea
 	vTaskDelete(NULL);

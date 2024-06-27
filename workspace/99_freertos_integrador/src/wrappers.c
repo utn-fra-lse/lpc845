@@ -44,3 +44,36 @@ void wrapper_adc_init(void) {
     ADC_EnableInterrupts(ADC0, kADC_ConvSeqAInterruptEnable);
     NVIC_EnableIRQ(ADC0_SEQA_IRQn);
 }
+
+/**
+ * @brief Wrapper para inicializacion del display 7 segmentos
+ */
+void wrapper_display_init(void) {
+
+	// Inicializo el puerto
+	GPIO_PortInit(GPIO, 0);
+	// Inicializo los pines como salidas
+	gpio_pin_direction_t config = { kGPIO_DigitalOutput, true };
+	uint32_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G, COM_1, COM_2 };
+	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
+		GPIO_PinInit(GPIO, 0, pins[i], &config);
+		GPIO_PinWrite(GPIO, 0, pins[i], 1);
+	}
+}
+
+/**
+ * @brief Escribe el numero de un digito en el display
+ * @param number es el numero que se quiere escribir
+ */
+void wrapper_display_write(uint8_t number) {
+	// Array con valores para los pines
+	uint8_t values[] = { 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6 };
+	// Array con los segmentos
+	uint32_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G };
+
+	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
+		// Escribo el valor del bit en el segmento que corresponda
+		uint32_t val = (values[number] & (1 << i))? 1 : 0;
+		GPIO_PinWrite(GPIO, 0, pins[i], val);
+	}
+}

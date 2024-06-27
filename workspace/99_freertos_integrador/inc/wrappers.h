@@ -12,4 +12,6 @@
 void wrapper_adc_init(void);
 void wrapper_display_init(void);
 
+void wrapper_display_write(uint8_t number);
+
 #endif
