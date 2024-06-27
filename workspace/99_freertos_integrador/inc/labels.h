@@ -8,8 +8,8 @@
 
 // Etiquetas para los pines del 7 segmentos
 
-#define SEG_A	11
-#define SEG_B	10
+#define SEG_A	10
+#define SEG_B	11
 #define SEG_C	6
 #define SEG_D	14
 #define SEG_E	0
