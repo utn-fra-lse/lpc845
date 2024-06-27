@@ -2,7 +2,7 @@
 #define _LABELS_H_
 
 // Canal del ADC para el potenciometro
-#define REF_POT_CH	1
+#define REF_POT_CH	8
 // Canal del ADC para el LM35
 #define LM35_CH		7
 

@@ -7,9 +7,9 @@ void wrapper_adc_init(void) {
     // Activo clock de matriz de conmutacion
     CLOCK_EnableClock(kCLOCK_Swm);
     // Configuro la funcion de ADC en el canal del LM35
-    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN0 << LM35_CH, true);
+    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN7, true);
     // Configuro la funcion de ADC en el canal del potenciometro
-    SWM_SetFixedPinSelect(SW0, kSWM_ADC_CHN0 << REF_POT_CH, true);
+    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN8, true);
     // Desactivo clock de matriz de conmutacion
     CLOCK_DisableClock(kCLOCK_Swm);
 
