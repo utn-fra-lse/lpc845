@@ -46,6 +46,21 @@ void wrapper_adc_init(void) {
 }
 
 /**
+ * @brief Wrapper para inicializacion de los botones
+ */
+void wrapper_btn_init(void) {
+	// Inicializo el puerto
+	GPIO_PortInit(GPIO, 0);
+
+	// Inicializo botones
+	gpio_pin_config_t config = { kGPIO_DigitalInput, true };
+	uint32_t pins[] = { USR_BTN, ISP_BTN };
+	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
+		GPIO_PinInit(GPIO, 0, pins[i], &config);
+	}
+}
+
+/**
  * @brief Wrapper para inicializacion del display 7 segmentos
  */
 void wrapper_display_init(void) {
