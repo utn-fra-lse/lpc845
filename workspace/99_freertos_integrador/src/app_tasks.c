@@ -77,11 +77,11 @@ void task_display_write(void *params) {
 		wrapper_display_off();
 		wrapper_display_write((uint8_t)(val / 10));
 		wrapper_display_on(COM_1);
-		vTaskDelay(20);
+		vTaskDelay(10);
 		wrapper_display_off();
 		wrapper_display_write((uint8_t)(val % 10));
 		wrapper_display_on(COM_2);
-		vTaskDelay(20);
+		vTaskDelay(10);
 	}
 }
 
