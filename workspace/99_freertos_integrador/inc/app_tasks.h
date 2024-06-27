@@ -17,16 +17,20 @@ typedef struct {
 
 // Prioridades de tareas
 
-#define tskINIT_PRIORITY		(tskIDLE_PRIORITY + 2UL)
-#define tskADC_READ_PRIORITY	(tskIDLE_PRIORITY + 1UL)
+#define tskADC_READ_PRIORITY		(tskIDLE_PRIORITY + 1UL)
+#define tskDISPLAY_WRITE_PRIORITY	(tskIDLE_PRIORITY + 1UL)
 
 // Stacks para tareas
 
-#define tskINIT_STACK			(configMINIMAL_STACK_SIZE)
 #define tskADC_READ_STACK		(configMINIMAL_STACK_SIZE)
+#define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
+
+
+// Cola para datos del ADC
+extern xQueueHandle queue_adc;
 
 // Prototipos de funciones
-void task_init(void *params);
 void task_adc_read(void *params);
+void task_display_write(void *params);
 
 #endif

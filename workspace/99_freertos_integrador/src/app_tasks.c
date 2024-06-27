@@ -4,19 +4,6 @@
 xQueueHandle queue_adc;
 
 /**
- * @brief Inicializacion de perifericos
- */
-void task_init(void *params) {
-	// Configuro el ADC
-	wrapper_adc_init();
-	// Configuro el display
-	wrapper_display_init();
-
-	// Elimino la tarea
-	vTaskDelete(NULL);
-}
-
-/**
  * @brief Activa una secuencia de conversion cada 0.25 segundos
  */
 void task_adc_read(void *params) {
@@ -26,6 +13,16 @@ void task_adc_read(void *params) {
 		ADC_DoSoftwareTriggerConvSeqA(ADC0);
 		// Bloqueo la tarea por 250 ms
 		vTaskDelay(250);
+	}
+}
+
+/**
+ * @brief Escribe valores en el display
+ */
+void task_display_write(void *params) {
+
+	while(1) {
+
 	}
 }
 
