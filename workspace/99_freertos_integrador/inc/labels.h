@@ -5,6 +5,8 @@
 #define REF_POT_CH	8
 // Canal del ADC para el LM35
 #define LM35_CH		7
+// Pin para el LED adicional
+#define LED			29
 
 // Etiquetas para los pines del 7 segmentos
 
