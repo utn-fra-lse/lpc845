@@ -4,7 +4,7 @@
 // Canal del ADC para el potenciometro
 #define REF_POT_CH	8
 // Canal del ADC para el LM35
-#define LM35_CH		7
+#define LM35_CH		0
 // Pin para el LED adicional
 #define LED			29
 
