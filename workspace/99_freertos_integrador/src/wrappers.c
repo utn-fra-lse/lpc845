@@ -1,5 +1,8 @@
 #include "wrappers.h"
 
+// Variable privada para registrar el evento del PWM
+static uint32_t pwm_led_event = 0;
+
 /**
  * @brief Wrapper para inicializacion del ADC
  */
@@ -84,5 +87,52 @@ void wrapper_display_write(uint8_t number) {
 		// Escribo el valor del bit en el segmento que corresponda
 		uint32_t val = (values[number] & (1 << i))? 1 : 0;
 		GPIO_PinWrite(GPIO, 0, pins[i], val);
+	}
+}
+
+/**
+ * @brief Wrapper para inicializacion del PWM para el LED
+ */
+void wrapper_pwm_init(void) {
+	// Conecto la salida 4 del SCT al LED azul
+    CLOCK_EnableClock(kCLOCK_Swm);
+    SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT4, kSWM_PortPin_P0_0 + LED);
+    CLOCK_DisableClock(kCLOCK_Swm);
+
+    // Eligo el clock para el Timer
+    uint32_t sctimer_clock = CLOCK_GetFreq(kCLOCK_Fro);
+    // Configuracion del SCT Timer
+    sctimer_config_t sctimer_config;
+    SCTIMER_GetDefaultConfig(&sctimer_config);
+    SCTIMER_Init(SCT0, &sctimer_config);
+
+    // Configuro el PWM
+    sctimer_pwm_signal_param_t pwm_config = {
+		.output = kSCTIMER_Out_4,		// Salida del Timer
+		.level = kSCTIMER_LowTrue,		// Logica negativa
+		.dutyCyclePercent = 0			// 50% de ancho de pulso
+    };
+
+    // Inicializo el PWM
+    SCTIMER_SetupPwm(
+		SCT0,
+		&pwm_config,
+		kSCTIMER_CenterAlignedPwm,
+		PWM_FREQ,
+		sctimer_clock,
+		&pwm_led_event
+	);
+    // Inicializo el Timer
+    SCTIMER_StartTimer(SCT0, kSCTIMER_Counter_U);
+}
+
+/**
+ * @brief Wrapper para actualizar el valor de duty del PWM
+ */
+void wrapper_pwm_update(uint8_t duty) {
+	// Verifico que no se exceda el valor
+	if(duty < 100 && duty > 0){
+		// Actualizo el ancho de pulso
+		SCTIMER_UpdatePwmDutycycle(SCT0, kSCTIMER_Out_4, duty, pwm_led_event);
 	}
 }
