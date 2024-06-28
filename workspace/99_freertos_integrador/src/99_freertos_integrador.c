@@ -11,18 +11,14 @@ int main(void) {
 	// Clock del sistema a 30 MHz
 	BOARD_BootClockFRO30M();
 
-	// Inicializacion de GPIO
-	wrapper_gpio_init(0);
-	// Configuro el ADC
-	wrapper_adc_init();
-	// Configuro el display
-	wrapper_display_init();
-	// Configuro botones
-	wrapper_btn_init();
-
-	// Inicializo colas
-	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
-	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
+	xTaskCreate(
+		task_init,
+		"Init",
+		tskINIT_STACK,
+		NULL,
+		tskINIT_PRIORITY,
+		NULL
+	);
 
 	// Tarea de lectura de ADC
 	xTaskCreate(
@@ -49,6 +45,15 @@ int main(void) {
 		tskDISPLAY_WRITE_STACK,
 		NULL,
 		tskDISPLAY_WRITE_PRIORITY,
+		NULL
+	);
+
+	xTaskCreate(
+		task_pwm,
+		"PWM",
+		tskPWM_STACK,
+		NULL,
+		tskPWM_PRIORITY,
 		NULL
 	);
 

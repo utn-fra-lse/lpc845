@@ -4,6 +4,32 @@
 xQueueHandle queue_adc;
 // Cola para selecion de valor para el display
 xQueueHandle queue_display_variable;
+// Cola para datos de temperatura
+xQueueHandle queue_temp;
+
+/**
+ * @brief Inicializa todos los perifericos y colas
+ */
+void task_init(void *params) {
+	// Inicializacion de GPIO
+	wrapper_gpio_init(0);
+	// Configuro el ADC
+	wrapper_adc_init();
+	// Configuro el display
+	wrapper_display_init();
+	// Configuro botones
+	wrapper_btn_init();
+	// Inicializo el PWM
+	wrapper_pwm_init();
+
+	// Inicializo colas
+	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
+	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
+	queue_temp = xQueueCreate(1, sizeof(temp_data_t));
+
+	// Elimino tarea para liberar recursos
+	vTaskDelete(NULL);
+}
 
 /**
  * @brief Activa una secuencia de conversion cada 0.25 segundos
@@ -64,14 +90,22 @@ void task_display_write(void *params) {
 		xQueuePeek(queue_display_variable, &variable, portMAX_DELAY);
 		// Leo los datos del ADC
 		xQueuePeek(queue_adc, &data, portMAX_DELAY);
+		// Calculo las temperaturas
+		temp_data_t temps = {
+			.temp_lm35 = (30.0 * data.temp_raw / 4095.0),
+			.temp_ref = (30.0 * data.ref_raw / 4095.0)
+		};
+		// Mando a la cola para el PWM
+		xQueueOverwrite(queue_temp, &temps);
 		// Veo cual tengo que mostrar
 		if(variable == kDISPLAY_TEMP) {
 			// Calculo la temperatura
-			val = (uint8_t)(100 * (3.3 * data.temp_raw / 4095.0));
+//			val = (uint8_t)(100 * (3.3 * data.temp_raw / 4095.0));
+			val = (uint8_t) temps.temp_lm35;
 		}
 		else {
 			// Calculo la referencia
-			val = (uint8_t)(30.0 * data.ref_raw / 4095.0);
+			val = (uint8_t) temps.temp_ref;
 		}
 		// Muestro el numero
 		wrapper_display_off();
@@ -82,6 +116,23 @@ void task_display_write(void *params) {
 		wrapper_display_write((uint8_t)(val % 10));
 		wrapper_display_on(COM_2);
 		vTaskDelay(10);
+	}
+}
+
+/**
+ * @brief Actualiza el duty del PWM
+ */
+void task_pwm(void *params) {
+	// Variable para guardar los datos del ADC
+	temp_data_t temps = {0};
+
+	while(1) {
+		// Bloqueo hasta que haya algo que leer
+		xQueueReceive(queue_temp, &temps, portMAX_DELAY);
+		// Calculo la diferencia
+		float err = 5 * (temps.temp_ref - temps.temp_lm35);
+		// Actualizo el duty
+		wrapper_pwm_update((int16_t)err);
 	}
 }
 

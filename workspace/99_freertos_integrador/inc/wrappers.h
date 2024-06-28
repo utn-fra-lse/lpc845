@@ -5,6 +5,7 @@
 #include "fsl_power.h"
 #include "fsl_swm.h"
 #include "fsl_adc.h"
+#include "fsl_sctimer.h"
 
 #include "labels.h"
 
@@ -13,6 +14,8 @@ void wrapper_adc_init(void);
 void wrapper_btn_init(void);
 void wrapper_display_init(void);
 void wrapper_display_write(uint8_t number);
+void wrapper_pwm_init(void);
+void wrapper_pwm_update(int16_t duty);
 
 // Funciones inline
 
