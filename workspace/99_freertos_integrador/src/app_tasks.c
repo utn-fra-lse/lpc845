@@ -4,6 +4,8 @@
 xQueueHandle queue_adc;
 // Cola para selecion de valor para el display
 xQueueHandle queue_display_variable;
+// Cola para datos de temperatura
+xQueueHandle queue_temp;
 
 /**
  * @brief Activa una secuencia de conversion cada 0.25 segundos
@@ -82,6 +84,23 @@ void task_display_write(void *params) {
 		wrapper_display_write((uint8_t)(val % 10));
 		wrapper_display_on(COM_2);
 		vTaskDelay(10);
+	}
+}
+
+/**
+ * @brief Actualiza el duty del PWM
+ */
+void task_pwm(void *params) {
+	// Variable para guardar los datos del ADC
+	temp_data_t temps = {0};
+
+	while(1) {
+		// Bloqueo hasta que haya algo que leer
+		xQueueReceive(queue_temp, &temps, portMAX_DELAY);
+		// Calculo la diferencia
+		float err = temps.temp_ref - temps.temp_lm35;
+		// Actualizo el duty
+		wrapper_pwm_update((uint8_t)err);
 	}
 }
 
