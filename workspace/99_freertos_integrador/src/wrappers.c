@@ -118,7 +118,7 @@ void wrapper_pwm_init(void) {
 		SCT0,
 		&pwm_config,
 		kSCTIMER_CenterAlignedPwm,
-		PWM_FREQ,
+		1000,
 		sctimer_clock,
 		&pwm_led_event
 	);
@@ -129,10 +129,14 @@ void wrapper_pwm_init(void) {
 /**
  * @brief Wrapper para actualizar el valor de duty del PWM
  */
-void wrapper_pwm_update(uint8_t duty) {
-	// Verifico que no se exceda el valor
-	if(duty < 100 && duty > 0){
-		// Actualizo el ancho de pulso
-		SCTIMER_UpdatePwmDutycycle(SCT0, kSCTIMER_Out_4, duty, pwm_led_event);
+void wrapper_pwm_update(int8_t duty) {
+	// Verifico que no se haya excedido de los limites
+	if(duty < 0) {
+		duty = 0;
 	}
+	else if(duty > 100) {
+		duty = 100;
+	}
+	// Actualizo el duty
+	SCTIMER_UpdatePwmDutycycle(SCT0, kSCTIMER_Out_4, duty, pwm_led_event);
 }
