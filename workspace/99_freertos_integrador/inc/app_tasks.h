@@ -29,6 +29,7 @@ typedef enum {
 
 // Prioridades de tareas
 
+#define tskINIT_PRIORITY			(tskIDLE_PRIORITY + 2UL)
 #define tskADC_READ_PRIORITY		(tskIDLE_PRIORITY + 1UL)
 #define tskBTN_PRIORITY				(tskIDLE_PRIORITY + 1UL)
 #define tskDISPLAY_WRITE_PRIORITY	(tskIDLE_PRIORITY + 1UL)
@@ -36,20 +37,14 @@ typedef enum {
 
 // Stacks para tareas
 
+#define tskINIT_STACK			(configMINIMAL_STACK_SIZE)
 #define tskADC_READ_STACK		(configMINIMAL_STACK_SIZE)
 #define tskBTN_STACK			(configMINIMAL_STACK_SIZE)
 #define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
 #define tskPWM_STACK			(configMINIMAL_STACK_SIZE)
 
-
-// Cola para datos del ADC
-extern xQueueHandle queue_adc;
-// Cola para eleccion de variable
-extern xQueueHandle queue_display_variable;
-// Cola para datos de temperatura
-extern xQueueHandle queue_temp;
-
 // Prototipos de funciones
+void task_init(void *params);
 void task_adc_read(void *params);
 void task_btn(void *params);
 void task_display_write(void *params);
