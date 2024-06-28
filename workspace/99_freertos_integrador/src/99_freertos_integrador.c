@@ -23,6 +23,7 @@ int main(void) {
 	// Inicializo colas
 	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
 	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
+	queue_temp = xQueueCreate(1, sizeof(temp_data_t));
 
 	// Tarea de lectura de ADC
 	xTaskCreate(
@@ -49,6 +50,15 @@ int main(void) {
 		tskDISPLAY_WRITE_STACK,
 		NULL,
 		tskDISPLAY_WRITE_PRIORITY,
+		NULL
+	);
+
+	xTaskCreate(
+		task_pwm,
+		"PWM",
+		tskPWM_STACK,
+		NULL,
+		tskPWM_PRIORITY,
 		NULL
 	);
 
