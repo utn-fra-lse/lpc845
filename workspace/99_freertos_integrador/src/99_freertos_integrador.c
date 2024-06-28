@@ -19,6 +19,8 @@ int main(void) {
 	wrapper_display_init();
 	// Configuro botones
 	wrapper_btn_init();
+	// Inicializo el PWM
+	wrapper_pwm_init();
 
 	// Inicializo colas
 	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
