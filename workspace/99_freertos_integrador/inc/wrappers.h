@@ -15,7 +15,7 @@ void wrapper_btn_init(void);
 void wrapper_display_init(void);
 void wrapper_display_write(uint8_t number);
 void wrapper_pwm_init(void);
-void wrapper_pwm_update(int8_t duty);
+void wrapper_pwm_update(int16_t duty);
 
 // Funciones inline
 

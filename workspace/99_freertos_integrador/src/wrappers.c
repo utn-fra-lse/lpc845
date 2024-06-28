@@ -10,7 +10,8 @@ void wrapper_adc_init(void) {
     // Activo clock de matriz de conmutacion
     CLOCK_EnableClock(kCLOCK_Swm);
     // Configuro la funcion de ADC en el canal del LM35
-    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN7, true);
+//    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN7, true);
+    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN0, true);
     // Configuro la funcion de ADC en el canal del potenciometro
     SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN8, true);
     // Desactivo clock de matriz de conmutacion
@@ -109,7 +110,7 @@ void wrapper_pwm_init(void) {
     // Configuro el PWM
     sctimer_pwm_signal_param_t pwm_config = {
 		.output = kSCTIMER_Out_4,		// Salida del Timer
-		.level = kSCTIMER_LowTrue,		// Logica negativa
+		.level = kSCTIMER_HighTrue,		// Logica negativa
 		.dutyCyclePercent = 0			// 50% de ancho de pulso
     };
 
@@ -129,7 +130,7 @@ void wrapper_pwm_init(void) {
 /**
  * @brief Wrapper para actualizar el valor de duty del PWM
  */
-void wrapper_pwm_update(int8_t duty) {
+void wrapper_pwm_update(int16_t duty) {
 	// Verifico que no se haya excedido de los limites
 	if(duty < 0) {
 		duty = 0;
