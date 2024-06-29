@@ -24,6 +24,8 @@
 
 #define USR_BTN		4
 #define ISP_BTN		12
+#define S1_BTN		16
+#define S2_BTN		25
 
 // Direccion del sensor de luz
 #define BH1750_ADDR	0x5C
