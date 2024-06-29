@@ -168,13 +168,13 @@ void wrapper_bh1750_init(void) {
 	// Comandos
 	uint8_t cmd[] = { 0x01, 0x10 };
 	// Comando de power on
-	I2C_MasterStart(I2C1_BASE, BH1750_ADDR, kI2C_Write);
-	I2C_MasterWriteBlocking(I2C1_BASE, &cmd[0], 1, kI2C_TransferDefaultFlag);
-	I2C_MasterStop(I2C1_BASE);
+	I2C_MasterStart(I2C1, BH1750_ADDR, kI2C_Write);
+	I2C_MasterWriteBlocking(I2C1, &cmd[0], 1, kI2C_TransferDefaultFlag);
+	I2C_MasterStop(I2C1);
 	// Comando de medicion continua a 1 lux de resolucion
-	I2C_MasterStart(I2C1_BASE, BH1750_ADDR, kI2C_Write);
-	I2C_MasterWriteBlocking(I2C1_BASE, &cmd[1], 1, kI2C_TransferDefaultFlag);
-	I2C_MasterStop(I2C1_BASE);
+	I2C_MasterStart(I2C1, BH1750_ADDR, kI2C_Write);
+	I2C_MasterWriteBlocking(I2C1, &cmd[1], 1, kI2C_TransferDefaultFlag);
+	I2C_MasterStop(I2C1);
 }
 
 /**
@@ -185,9 +185,9 @@ float wrapper_bh1750_read(void) {
 	// Resultado
 	uint8_t res[2] = {0};
 	// Lectura del sensor
-	I2C_MasterRepeatedStart(I2C1_BASE, BH1750_ADDR, kI2C_Read);
-	I2C_MasterReadBlocking(I2C1_BASE, res, 2, kI2C_TransferDefaultFlag);
-	I2C_MasterStop(I2C1_BASE);
+	I2C_MasterRepeatedStart(I2C1, BH1750_ADDR, kI2C_Read);
+	I2C_MasterReadBlocking(I2C1, res, 2, kI2C_TransferDefaultFlag);
+	I2C_MasterStop(I2C1);
 	// Devuelvo el resultado
-	return (res[0] << 8 + res[1]) / 1.2;
+	return ((res[0] << 8) + res[1]) / 1.2;
 }
