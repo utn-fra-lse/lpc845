@@ -55,7 +55,7 @@ void wrapper_adc_init(void) {
 void wrapper_btn_init(void) {
 	// Inicializo botones
 	gpio_pin_config_t config = { kGPIO_DigitalInput };
-	uint32_t pins[] = { USR_BTN, ISP_BTN };
+	uint32_t pins[] = { USR_BTN, ISP_BTN, S1_BTN, S2_BTN };
 	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
 		GPIO_PinInit(GPIO, 0, pins[i], &config);
 	}

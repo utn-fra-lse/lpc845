@@ -58,4 +58,24 @@ static inline void wrapper_display_on(uint8_t com) {
 	GPIO_PinWrite(GPIO, 0, com, 0);
 }
 
+/**
+ * @brief Apaga todos los segmentos
+ */
+static inline void wrapper_display_segments_off(void) {
+	// Pongo un uno en cada segmento
+	uint8_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G };
+	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint8_t); i++) {
+		GPIO_PinWrite(GPIO, 0, pins[i], 1);
+	}
+}
+
+/**
+ * @brief Prende el segmento indicado
+ * @param segment numero de pin del segmento
+ */
+static inline void wrapper_display_segment_on(uint8_t segment) {
+	// Pongo un cero en el segmento indicado
+	GPIO_PinWrite(GPIO, 0, segment, 0);
+}
+
 #endif
