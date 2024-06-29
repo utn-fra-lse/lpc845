@@ -57,6 +57,15 @@ int main(void) {
 		NULL
 	);
 
+	xTaskCreate(
+		task_bh1750,
+		"BH1750",
+		tskBH1750_STACK,
+		NULL,
+		tskBH1750_PRIORITY,
+		NULL
+	);
+
 	vTaskStartScheduler();
 
     while(1);
