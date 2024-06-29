@@ -43,7 +43,7 @@ typedef enum {
 #define tskBTN_STACK			(configMINIMAL_STACK_SIZE)
 #define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
 #define tskPWM_STACK			(configMINIMAL_STACK_SIZE)
-#define tskBH1750_STACK			(configMINIMAL_STACK_SIZE)
+#define tskBH1750_STACK			(2 * configMINIMAL_STACK_SIZE)
 
 // Prototipos de funciones
 void task_init(void *params);
