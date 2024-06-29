@@ -7,6 +7,9 @@ xQueueHandle queue_display_variable;
 // Cola para datos de temperatura
 xQueueHandle queue_temp;
 
+// Handler para la tarea de display write
+TaskHandle_t handle_display;
+
 /**
  * @brief Inicializa todos los perifericos y colas
  */
@@ -151,6 +154,40 @@ void task_bh1750(void *params) {
 		vTaskDelay(200);
 		// Leo el valor de lux
 		lux = wrapper_bh1750_read();
+	}
+}
+
+/**
+ * @brief Dibuja una animacion sobre el 7 segmentos
+ */
+void task_animation(void *params) {
+	// Segmentos usados
+	uint8_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F };
+
+	while(1) {
+		// Veo si esta apretado el pulsador
+		if(!wrapper_btn_get(S1_BTN)) {
+			// Verifico que no haya sido un falso cero
+			vTaskDelay(20);
+			if(!wrapper_btn_get(S1_BTN)) {
+				// Suspendo la tarea que dibuja los numeros
+				vTaskSuspend(handle_display);
+				// Prendo ambos segmentos
+				wrapper_display_on(COM_1);
+				wrapper_display_on(COM_2);
+				// Prendo de a uno los segmentos
+				for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint8_t); i++) {
+					// Apago todos los segmentos
+					wrapper_display_segments_off();
+					wrapper_display_segment_on(pins[i]);
+					vTaskDelay(50);
+				}
+			}
+		}
+		else {
+			// Libero la tarea
+			vTaskResume(handle_display);
+		}
 	}
 }
 

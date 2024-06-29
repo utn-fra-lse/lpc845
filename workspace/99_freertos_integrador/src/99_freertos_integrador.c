@@ -11,6 +11,8 @@ int main(void) {
 	// Clock del sistema a 30 MHz
 	BOARD_BootClockFRO30M();
 
+	// Creacion de tareas
+
 	xTaskCreate(
 		task_init,
 		"Init",
@@ -20,7 +22,6 @@ int main(void) {
 		NULL
 	);
 
-	// Tarea de lectura de ADC
 	xTaskCreate(
 		task_adc_read,
 		"ADC",
@@ -45,7 +46,7 @@ int main(void) {
 		tskDISPLAY_WRITE_STACK,
 		NULL,
 		tskDISPLAY_WRITE_PRIORITY,
-		NULL
+		&handle_display
 	);
 
 	xTaskCreate(
@@ -63,6 +64,15 @@ int main(void) {
 		tskBH1750_STACK,
 		NULL,
 		tskBH1750_PRIORITY,
+		NULL
+	);
+
+	xTaskCreate(
+		task_animation,
+		"Animation",
+		tskANIMATION_STACK,
+		NULL,
+		tskANIMATION_PRIORITY,
 		NULL
 	);
 
