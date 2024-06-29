@@ -21,6 +21,9 @@ void task_init(void *params) {
 	wrapper_btn_init();
 	// Inicializo el PWM
 	wrapper_pwm_init();
+	// Inicializo I2C y Bh1750
+	wrapper_i2c_init();
+	wrapper_bh1750_init();
 
 	// Inicializo colas
 	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
@@ -133,6 +136,21 @@ void task_pwm(void *params) {
 		float err = 5 * (temps.temp_ref - temps.temp_lm35);
 		// Actualizo el duty
 		wrapper_pwm_update((int16_t)err);
+	}
+}
+
+/**
+ * @brief Lee periodicamente el valor de intensidad luminica
+ */
+void task_bh1750(void *params) {
+	// Valor de intensidad luminica
+	float lux = 0.0;
+
+	while(1) {
+		// Bloqueo por 160 ms (requisito)
+		vTaskDelay(200);
+		// Leo el valor de lux
+		lux = wrapper_bh1750_read();
 	}
 }
 

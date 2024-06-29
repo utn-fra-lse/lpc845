@@ -34,6 +34,7 @@ typedef enum {
 #define tskBTN_PRIORITY				(tskIDLE_PRIORITY + 1UL)
 #define tskDISPLAY_WRITE_PRIORITY	(tskIDLE_PRIORITY + 1UL)
 #define tskPWM_PRIORITY				(tskIDLE_PRIORITY + 1UL)
+#define tskBH1750_PRIORITY			(tskIDLE_PRIORITY + 1UL)
 
 // Stacks para tareas
 
@@ -42,6 +43,7 @@ typedef enum {
 #define tskBTN_STACK			(configMINIMAL_STACK_SIZE)
 #define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
 #define tskPWM_STACK			(configMINIMAL_STACK_SIZE)
+#define tskBH1750_STACK			(configMINIMAL_STACK_SIZE)
 
 // Prototipos de funciones
 void task_init(void *params);
@@ -49,5 +51,6 @@ void task_adc_read(void *params);
 void task_btn(void *params);
 void task_display_write(void *params);
 void task_pwm(void *params);
+void task_bh1750(void *params);
 
 #endif
