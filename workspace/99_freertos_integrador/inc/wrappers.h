@@ -6,6 +6,7 @@
 #include "fsl_swm.h"
 #include "fsl_adc.h"
 #include "fsl_sctimer.h"
+#include "fsl_i2c.h"
 
 #include "labels.h"
 
@@ -16,6 +17,9 @@ void wrapper_display_init(void);
 void wrapper_display_write(uint8_t number);
 void wrapper_pwm_init(void);
 void wrapper_pwm_update(int16_t duty);
+void wrapper_i2c_init(void);
+void wrapper_bh1750_init(void);
+float wrapper_bt1750_read(void);
 
 // Funciones inline
 

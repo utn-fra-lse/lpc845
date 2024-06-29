@@ -141,3 +141,53 @@ void wrapper_pwm_update(int16_t duty) {
 	// Actualizo el duty
 	SCTIMER_UpdatePwmDutycycle(SCT0, kSCTIMER_Out_4, duty, pwm_led_event);
 }
+
+/**
+ * @brief Wrapper que inicializa el I2C
+ */
+void wrapper_i2c_init(void) {
+	// Inicializo el clock del I2C1
+	CLOCK_Select(kI2C1_Clk_From_MainClk);
+    // Asigno las funciones de I2C1 a los pines 26 y 27
+	CLOCK_EnableClock(kCLOCK_Swm);
+    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_27);
+    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SCL, kSWM_PortPin_P0_26);
+    CLOCK_DisableClock(kCLOCK_Swm);
+
+    // Configuracion de master para el I2C
+    i2c_master_config_t config;
+    I2C_MasterGetDefaultConfig(&config);
+    config.baudRate_Bps = 400000;
+    I2C_MasterInit(I2C1_BASE, &config, SystemCoreClock);
+}
+
+/**
+ * @brief Wrapper que inicializa el BH1750
+ */
+void wrapper_bh1750_init(void) {
+	// Comandos
+	uint8_t cmd[] = { 0x01, 0x10 };
+	// Comando de power on
+	I2C_MasterStart(I2C1_BASE, BH1750_ADDR, kI2C_Write);
+	I2C_MasterWriteBlocking(I2C1_BASE, &cmd[0], 1, kI2C_TransferDefaultFlag);
+	I2C_MasterStop(I2C1_BASE);
+	// Comando de medicion continua a 1 lux de resolucion
+	I2C_MasterStart(I2C1_BASE, BH1750_ADDR, kI2C_Write);
+	I2C_MasterWriteBlocking(I2C1_BASE, &cmd[1], 1, kI2C_TransferDefaultFlag);
+	I2C_MasterStop(I2C1_BASE);
+}
+
+/**
+ * @brief Wrapper para lectura del BH1750 en modo continuo
+ * @return intensidad luminica en luxes
+ */
+float wrapper_bh1750_read(void) {
+	// Resultado
+	uint8_t res[2] = {0};
+	// Lectura del sensor
+	I2C_MasterRepeatedStart(I2C1_BASE, BH1750_ADDR, kI2C_Read);
+	I2C_MasterReadBlocking(I2C1_BASE, res, 2, kI2C_TransferDefaultFlag);
+	I2C_MasterStop(I2C1_BASE);
+	// Devuelvo el resultado
+	return (res[0] << 8 + res[1]) / 1.2;
+}
