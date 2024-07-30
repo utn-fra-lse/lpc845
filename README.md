@@ -8,7 +8,7 @@ Ejemplos que van a encontrar en este directorio incluyen:
 
 | Ejemplo | Descripcion |
 | --- | --- |
-| [01_hello_world](ejemplos/01_hello_world/) | Programa básico para compilar y ver por consola un "Hola mundo!"
+| [01_blinky](ejemplos/01_blinky/) | Programa básico para compilar y ver un blinky"
 | [02_digital_in_out](ejemplos/02_digital_in_out/) | Ejemplo de uso de salidas y entradas digitales con los pulsadores 
 | [03_systick_blinky](ejemplos/03_systick_blinky/) | Programa que hace un blinky coordinado por el Systick
 | [04_adc_polling](ejemplos/04_adc_polling/) | Ejemplo de lectura analógica del potenciómetro por polling
