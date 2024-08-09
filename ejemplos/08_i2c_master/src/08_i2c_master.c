@@ -43,7 +43,7 @@ int main(void) {
 
 	while(1) {
 		// Lectura del sensor
-		if(I2C_MasterRepeatedStart(I2C1, BH1750_ADDR, kI2C_Read) == kStatus_Success) {
+		if(I2C_MasterStart(I2C1, BH1750_ADDR, kI2C_Read) == kStatus_Success) {
 			// Resultado
 			uint8_t res[2] = {0};
 			I2C_MasterReadBlocking(I2C1, res, 2, kI2C_TransferDefaultFlag);
