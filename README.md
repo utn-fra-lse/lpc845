@@ -22,4 +22,5 @@ Ejemplos que van a encontrar en este directorio incluyen:
 | [13_iap](ejemplos/13_iap) | Grabado de una cadena de caracteres en la memoria Flash
 | [15_freertos_blinky](ejemplos/15_freertos_blinky) | Conmutación de un LED con FreeRTOS
 | [16_freertos_task_params](ejemplos/16_freertos_task_params) | Conmutación de dos LEDs a partir de la misma tarea diferenciada por parámetros
+| [17_freertos_priority_change](ejemplos/17_freertos_priority_change) | Cambio de prioridad de tareas mediante handle
 | [99_freertos_integrador](ejemplos/99_freertos_integrador) | Ejemplo integrador de un pequeño proyecto con FreeRTOS
