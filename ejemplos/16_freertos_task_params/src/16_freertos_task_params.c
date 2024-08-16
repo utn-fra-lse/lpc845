@@ -49,15 +49,11 @@ int main(void) {
 	BOARD_BootClockFRO30M();
 
 	// Estructura de datos de LEDs
-	led_struct_t led_green = { 1, 0 };
 	led_struct_t led_blue = { 1, 1 };
-	led_struct_t led_red = { 1, 2 };
 	led_struct_t other_led_blue = { 0, 29 };
 
 	// Estructuras para tareas
-	task_data_t led_green_task = { led_green, 500 };
 	task_data_t led_blue_task = { led_blue, 750 };
-	task_data_t led_red_task = { led_red, 1000 };
 	task_data_t other_led_blue_task = { other_led_blue, 1000 };
 
 	xTaskCreate(
