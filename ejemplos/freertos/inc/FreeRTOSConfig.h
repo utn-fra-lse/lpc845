@@ -36,6 +36,7 @@
 #define configGENERATE_RUN_TIME_STATS		0
 #define configUSE_TICKLESS_IDLE				1
 #define configSUPPORT_DYNAMIC_ALLOCATION	1
+#define configENABLE_MPU					0
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 				0
 #define configMAX_CO_ROUTINE_PRIORITIES		( 2 )
