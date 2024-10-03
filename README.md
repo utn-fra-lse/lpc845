@@ -16,6 +16,7 @@ Ejemplos que van a encontrar en este directorio incluyen:
 | [06_usart_echo_polling](ejemplos/06_usart_echo_polling/) | Eco por USART por polling
 | [07_usart_echo_interrupt](ejemplos/07_usart_echo_interrupt/) | Eco por USART por interrupción
 | [08_i2c_master](ejemplos/08_i2c_master/) | Lectura de intensidad lumínica de un sensor por I2C
+| [09_spi_master](ejemplos/09_spi_master/) | Lectura de temperatura de una termocupla tipo K con un MAX6675 a por SPI
 | [10_timer](ejemplos/10_timer) | Blinkeo de LEDs por interrupción de Timer
 | [11_sct_pwm](ejemplos/11_sct_pwm) | Control de PWM por consola para el LED azul
 | [12_dac](ejemplos/12_dac) | Generacion de una triangular de 50 Hz con el DAC
