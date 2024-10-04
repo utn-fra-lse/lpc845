@@ -24,4 +24,5 @@ Ejemplos que van a encontrar en este directorio incluyen:
 | [15_freertos_blinky](ejemplos/15_freertos_blinky) | Conmutación de un LED con FreeRTOS
 | [16_freertos_task_params](ejemplos/16_freertos_task_params) | Conmutación de dos LEDs a partir de la misma tarea diferenciada por parámetros
 | [17_freertos_priority_change](ejemplos/17_freertos_priority_change) | Cambio de prioridad de tareas mediante handle
+| [18_freertos_static_allocation](ejemplos/18_freertos_static_allocation) | Ejemplo de tareas creadas estáticamente
 | [99_freertos_integrador](ejemplos/99_freertos_integrador) | Ejemplo integrador de un pequeño proyecto con FreeRTOS
