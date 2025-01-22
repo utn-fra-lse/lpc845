@@ -33,6 +33,10 @@ void task_init(void *params) {
 	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
 	queue_temp = xQueueCreate(1, sizeof(temp_data_t));
 
+	vQueueAddToRegistry(queue_adc, "ADC");
+	vQueueAddToRegistry(queue_display_variable, "Display");
+	vQueueAddToRegistry(queue_temp, "Temperature");
+
 	// Elimino tarea para liberar recursos
 	vTaskDelete(NULL);
 }
