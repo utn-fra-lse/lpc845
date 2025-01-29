@@ -3,7 +3,7 @@
 	<name>01_blinky</name>
 	<comment></comment>
 	<projects>
-		<project>lpc845_breakout_board</project>
+		<project>lse-lpc-api</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
