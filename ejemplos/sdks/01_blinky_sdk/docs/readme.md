@@ -1,1 +1,0 @@
-Please refer Mcuxpresso SDK documentation from https://mcuxpresso.nxp.com/mcuxsdk/25.03.00
