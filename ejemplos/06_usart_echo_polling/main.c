@@ -4,9 +4,8 @@
 #include "fsl_swm.h"
 #include "fsl_usart.h"
 
-
-/*
- * @brief   Application entry point.
+/**
+ * @brief Programa principal
  */
 int main(void) {
 	// Inicializacion
@@ -62,12 +61,10 @@ int main(void) {
     		USART_ReadBlocking(USART1, (uint8_t*) &str_out[i++], 1);
 
     	} while(str_in[i] != '\0');
-
     	// Cierro la cadena
     	str_out[i] = 0;
-
+        
     	PRINTF("Recibido desde USART: %s\n", str_out);
-
     }
-    return 0 ;
+    return 0;
 }
