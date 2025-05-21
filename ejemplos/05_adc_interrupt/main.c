@@ -10,14 +10,11 @@
 // Flag para verificar que la conversion se termino
 bool adc_conversion_done = false;
 
-
-/*
- * @brief   Application entry point.
+/**
+ * @brief Programa principal
  */
 int main(void) {
-
-	// Inicializacion de clock
-	BOARD_BootClockFRO30M();
+	// Inicializacion de console
     BOARD_InitDebugConsole();
 
     // Activo clock de matriz de conmutacion
@@ -91,7 +88,7 @@ int main(void) {
 /**
  * @brief Handler para la interrupcion del ADC Sequence A
  */
-void ADC_SEQA_IRQHandler(void) {
+void ADC0_SEQA_IRQHandler(void) {
 	// Verifico que se haya terminado la conversion correctamente
 	if(kADC_ConvSeqAInterruptFlag == (kADC_ConvSeqAInterruptFlag & ADC_GetStatusFlags(ADC0))) {
 		// Limpio flag de interrupcion
