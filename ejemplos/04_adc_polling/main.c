@@ -11,9 +11,7 @@
  * @brief   Application entry point.
  */
 int main(void) {
-
-	// Inicializacion de clock
-	BOARD_BootClockFRO30M();
+	// Inicializacion de consola
     BOARD_InitDebugConsole();
 
     // Activo clock de matriz de conmutacion
