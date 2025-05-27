@@ -1,5 +1,4 @@
 #include "board.h"
-#include "pin_mux.h"
 #include "fsl_dac.h"
 #include "fsl_swm.h"
 #include "fsl_power.h"
