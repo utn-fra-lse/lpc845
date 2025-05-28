@@ -91,4 +91,3 @@ void USART1_IRQHandler(void) {
 		usart_rx_done = true;
 	}
 }
-
