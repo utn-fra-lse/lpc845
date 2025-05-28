@@ -1,6 +1,4 @@
 #include "board.h"
-#include "peripherals.h"
-#include "pin_mux.h"
 #include "fsl_iap.h"
 #include "fsl_debug_console.h"
 
