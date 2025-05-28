@@ -1,9 +1,7 @@
 #include "board.h"
 #include "fsl_sctimer.h"
 #include "fsl_swm.h"
-#include "pin_mux.h"
 #include "fsl_gpio.h"
-#include "fsl_common.h"
 #include "fsl_swm.h"
 #include "fsl_debug_console.h"
 
