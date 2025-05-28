@@ -1,8 +1,5 @@
 #include "board.h"
-#include "pin_mux.h"
-#include "fsl_iocon.h"
 #include "FreeRTOS.h"
-
 #include "task.h"
 
 /**
@@ -45,9 +42,6 @@ void task_template(void *params) {
  * @brief Programa principal
  */
 int main(void) {
-	// Inicializo clocks
-	BOARD_BootClockFRO30M();
-
 	// Estructura de datos de LEDs
 	led_struct_t led_blue = { 1, 1 };
 	led_struct_t other_led_blue = { 0, 29 };
@@ -56,28 +50,11 @@ int main(void) {
 	task_data_t led_blue_task = { led_blue, 750 };
 	task_data_t other_led_blue_task = { other_led_blue, 1000 };
 
-	xTaskCreate(
-		task_template,
-		"Other Blue",
-		configMINIMAL_STACK_SIZE,
-		(void*) &other_led_blue_task,
-		tskIDLE_PRIORITY + 1,
-		NULL
-	);
-
-	xTaskCreate(
-		task_template,
-		"Blue",
-		configMINIMAL_STACK_SIZE,
-		(void*) &led_blue_task,
-		tskIDLE_PRIORITY + 1,
-		NULL
-	);
-
+	xTaskCreate(task_template, "", configMINIMAL_STACK_SIZE, (void*) &other_led_blue_task, tskIDLE_PRIORITY + 1, NULL);
+	xTaskCreate(task_template, "", configMINIMAL_STACK_SIZE, (void*) &led_blue_task, tskIDLE_PRIORITY + 1, NULL);
 
 	// Inicio el Scheduler
 	vTaskStartScheduler();
-
     while(1);
     return 0;
 }
