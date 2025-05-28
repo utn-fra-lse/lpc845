@@ -11,7 +11,7 @@ add_library(freertos STATIC
     stream_buffer.c
     tasks.c
     timers.c
-    portable/MemMang/heap_3.c
+    portable/MemMang/heap_2.c
     portable/GCC/${CORE}/port.c
 )
 
