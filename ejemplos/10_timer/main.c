@@ -1,13 +1,11 @@
 #include "board.h"
 #include "fsl_ctimer.h"
-#include "pin_mux.h"
 #include "fsl_gpio.h"
 #include "fsl_swm.h"
 
 // GPIO para los LEDs
-#define LED_GREEN	0
-#define LED_BLUE	1
-#define LED_RED		2
+#define LED_GREEN	GPIO, 1, 0
+#define LED_BLUE	GPIO, 0, 29
 
 // Prototipos de callbacks para los eventos del CTimer
 void ctimer_match_callback(uint32_t flags);
@@ -20,12 +18,13 @@ ctimer_callback_t ctimer_callback_table[] = { ctimer_match_callback };
  */
 int main(void) {
 	// Configuracion de salida
-    gpio_pin_config_t out_config = {kGPIO_DigitalOutput, 1};
+    gpio_pin_config_t out_config_1 = {kGPIO_DigitalOutput, 1};
+    gpio_pin_config_t out_config_2 = {kGPIO_DigitalOutput, 0};
     // Configuro los GPIO de los tres LEDs como salidas
+    GPIO_PortInit(GPIO, 0);
     GPIO_PortInit(GPIO, 1);
-    GPIO_PinInit(GPIO, 1, LED_GREEN, &out_config);
-    GPIO_PinInit(GPIO, 1, LED_BLUE, &out_config);
-    GPIO_PinInit(GPIO, 1, LED_RED, &out_config);
+    GPIO_PinInit(LED_GREEN, &out_config_1);
+    GPIO_PinInit(LED_BLUE, &out_config_2);
 
     // Configuracion de CTimer
     ctimer_config_t config;
@@ -43,9 +42,9 @@ int main(void) {
 		.enableInterrupt = true								// Habilito interrupcion
     };
 
-    // Salida del CTimer Match 0 al LED Rojo
+    // Salida del CTimer Match 0 al LED verde
     CLOCK_EnableClock(kCLOCK_Swm);
-    SWM_SetMovablePinSelect(SWM0, kSWM_T0_MAT_CHN0, kSWM_PortPin_P1_2);
+    SWM_SetMovablePinSelect(SWM0, kSWM_T0_MAT_CHN0, kSWM_PortPin_P1_0);
     CLOCK_DisableClock(kCLOCK_Swm);
 
     // Habilito interrupcion en el NVIC
@@ -66,15 +65,8 @@ int main(void) {
 void ctimer_match_callback(uint32_t flags) {
 	// Contador
 	static uint8_t i = 0;
-	// Conmuto LED Verde cada 2 interrupciones
-	if(i == 1 || i == 3) {
-		GPIO_PinWrite(GPIO, 1, LED_GREEN, !GPIO_PinRead(GPIO, 1, LED_GREEN));
-	}
-	// Conmuto LED Azul cada 4 interrupciones
-	if(i++ == 3) {
-		GPIO_PinWrite(GPIO, 1, LED_BLUE, !GPIO_PinRead(GPIO, 1, LED_BLUE));
-		// Reinicio contador
-		i = 0;
+	// Conmuto LED azul cada 2 interrupciones
+	if(i++ % 2 == 0) {
+		GPIO_PinWrite(LED_BLUE, !GPIO_PinRead(LED_BLUE));
 	}
 }
-
