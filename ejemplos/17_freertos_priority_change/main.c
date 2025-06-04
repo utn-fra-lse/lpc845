@@ -152,41 +152,10 @@ int main(void) {
 
     // Creo tareas
 
-    xTaskCreate(
-		task_init,
-		"Init",
-		2 * configMINIMAL_STACK_SIZE,
-		NULL,
-		tskIDLE_PRIORITY + 2,
-		NULL
-	);
-
-    xTaskCreate(
-    	task_user,
-		"User",
-		configMINIMAL_STACK_SIZE,
-		NULL,
-		tskIDLE_PRIORITY + 1,
-		NULL
-    );
-
-    xTaskCreate(
-		task_adc_seq_a,
-		"SEQ A",
-		2 * configMINIMAL_STACK_SIZE,
-		NULL,
-		tskIDLE_PRIORITY + 1,
-		&seq_a_handle
-    );
-
-    xTaskCreate(
-		task_adc_seq_b,
-		"SEQ B",
-		2 * configMINIMAL_STACK_SIZE,
-		NULL,
-		tskIDLE_PRIORITY,
-		&seq_b_handle
-    );
+    xTaskCreate(task_init, "Init", 2 * configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
+    xTaskCreate(task_user, "User", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(task_adc_seq_a, "SEQ A", 2 * configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, &seq_a_handle);
+    xTaskCreate(task_adc_seq_b, "SEQ B", 2 * configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, &seq_b_handle);
 
     // Arranco scheduler
     vTaskStartScheduler();
