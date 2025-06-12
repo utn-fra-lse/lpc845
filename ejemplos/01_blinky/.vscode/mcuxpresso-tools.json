@@ -1,0 +1,15 @@
+{
+  "version": "25.3",
+  "toolchainPath": "/Applications/MCUXpressoIDE_11.10.0_3148/ide/tools",
+  "linkedProjects": [],
+  "trustZoneType": "none",
+  "multicoreType": "none",
+  "projectType": "sdk-freestanding",
+  "sdk": {
+    "version": "25.03.00",
+    "path": "/Users/carlassaraf/Documents/facultad/lse/curso-lse/lpc845/ejemplos/sdks/sdk_25_03_00_macos",
+    "boardId": "lpc845breakout",
+    "deviceId": "LPC845",
+    "coreId": "core0_LPC845"
+  }
+}
