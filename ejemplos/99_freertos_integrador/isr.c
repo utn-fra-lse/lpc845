@@ -48,8 +48,8 @@ void ADC0_SEQA_IRQHandler(void) {
 		ADC_GetChannelConversionResult(ADC0, LM35_CH, &temp_info);
 		// Estructura de datos para mandar
 		adc_data_t data = {
-			.temp_raw = (uint16_t)temp_info.result,
-			.ref_raw = (uint16_t)ref_info.result
+			.temp_raw = (uint16_t) 4095 - temp_info.result,
+			.ref_raw = (uint16_t) 4095 - ref_info.result
 		};
 		// Mando por la cola los datos
 		xQueueOverwriteFromISR(queue_adc, &data, &higher_task);
