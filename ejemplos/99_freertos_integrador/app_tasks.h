@@ -23,19 +23,23 @@
 #define tskANIMATION_PRIORITY			(tskIDLE_PRIORITY + 1UL)
 #define tskBLINKY_PRIORITY				(tskIDLE_PRIORITY + 1UL)
 #define tskBUZZER_PRIORITY				(tskIDLE_PRIORITY + 2UL)
+#define tskCOUNTER_PRIORITY				(tskIDLE_PRIORITY + 1UL)
+#define tskCOUNTER_BTNS_PRIORITY	(tskIDLE_PRIORITY + 2UL)
 
 // Stacks para tareas
 
 #define tskINIT_STACK						(3 * configMINIMAL_STACK_SIZE)
-#define tskADC_READ_STACK				(configMINIMAL_STACK_SIZE / 2)
+#define tskADC_READ_STACK				(configMINIMAL_STACK_SIZE)
 #define tskBTN_STACK						(configMINIMAL_STACK_SIZE)
 #define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
-#define tskDISPLAY_STACK				(configMINIMAL_STACK_SIZE)
-#define tskPWM_STACK						(configMINIMAL_STACK_SIZE)
+#define tskDISPLAY_STACK				(3 * configMINIMAL_STACK_SIZE / 2)
+#define tskPWM_STACK						(3 * configMINIMAL_STACK_SIZE / 2)
 #define tskBH1750_STACK					(configMINIMAL_STACK_SIZE)
 #define tskANIMATION_STACK			(3 * configMINIMAL_STACK_SIZE / 2)
 #define tskBLINKY_STACK					(configMINIMAL_STACK_SIZE)
 #define tskBUZZER_STACK					(configMINIMAL_STACK_SIZE)
+#define tskCOUNTER_STACK				(configMINIMAL_STACK_SIZE)
+#define tskCOUNTER_BTNS_STACK		(configMINIMAL_STACK_SIZE)
 
 // Handler para la tarea de display write
 extern TaskHandle_t handle_display;
@@ -51,6 +55,8 @@ void task_bh1750(void *params);
 void task_animation(void *params);
 void task_blinky(void *params);
 void task_buzzer(void *params);
+void task_counter(void *params);
+void task_counter_btns(void *params);
 
 /**
  * @brief Wrapper que verifica el estado de un pulsador con pull-up

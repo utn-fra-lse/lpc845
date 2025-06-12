@@ -57,3 +57,19 @@ void ADC0_SEQA_IRQHandler(void) {
 		portYIELD_FROM_ISR(higher_task);
 	}
 }
+
+/**
+ * @brief Handler para la interrupción del touch
+ */
+void CMP_CAPT_IRQHandler(void) {
+	// Variable de cambio de contexto
+	int32_t higher_task = 0;
+	// Limpio interrupción
+	CAPT_ClearInterruptStatusFlags(CAPT, kCAPT_InterruptOfPollDoneStatusFlag);
+	// Doy el semáforo si se presionó el touch
+	if(wrapper_touch_is_touched()) {
+		xSemaphoreGiveFromISR(semphr_touch, &higher_task);
+	}
+	// Veo si hace falta un cambio de contexto
+	portYIELD_FROM_ISR(higher_task);
+}

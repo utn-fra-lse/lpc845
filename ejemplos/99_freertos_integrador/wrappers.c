@@ -241,3 +241,47 @@ float wrapper_bh1750_read(void) {
 	// Devuelvo el resultado
 	return ((res[0] << 8) + res[1]) / 1.2;
 }
+
+/**
+ * @brief Wrapper que inicializa el pulsador capacitivo 
+ */
+void wrapper_touch_init(void) {
+	// Habilita las funciones de táctil capacitivo en los pines
+	CLOCK_EnableClock(kCLOCK_Swm);
+	SWM_SetFixedPinSelect(SWM0, kSWM_CAPT_X0, true);
+	SWM_SetFixedPinSelect(SWM0, kSWM_CAPT_YH, true);
+	SWM_SetFixedPinSelect(SWM0, kSWM_CAPT_YL, true);
+	CLOCK_DisableClock(kCLOCK_Swm);
+
+	// Saca pull ups y pull downs
+	CLOCK_EnableClock(kCLOCK_Iocon);
+	IOCON_PinMuxSet(IOCON, IOCON_INDEX_PIO1_8, IOCON_CAPT_CONFIG);
+	IOCON_PinMuxSet(IOCON, IOCON_INDEX_PIO1_9, IOCON_CAPT_CONFIG);
+	IOCON_PinMuxSet(IOCON, IOCON_INDEX_PIO0_31, IOCON_CAPT_CONFIG);
+	CLOCK_DisableClock(kCLOCK_Iocon);
+
+	// Selecciona el clock de base
+	CLOCK_Select(kCAPT_Clk_From_Fro);
+	POWER_DisablePD(kPDRUNCFG_PD_ACMP);
+
+	// Inicialización básica del táctil agregando el pin X0
+	capt_config_t config;
+	CAPT_GetDefaultConfig(&config);
+	config.enableXpins = kCAPT_X0Pin;
+	CAPT_Init(CAPT, &config);
+	// Habilita interrupción luego de cada tanda de conversiones
+	CAPT_EnableInterrupts(CAPT, kCAPT_InterruptOfPollDoneEnable);
+	NVIC_EnableIRQ(CMP_CAPT_IRQn);
+	// Conversiones continuas
+	CAPT_SetPollMode(CAPT, kCAPT_PollContinuousMode);
+}
+
+/**
+ * @brief Wrapper que obtiene si el táctil se presionó o no
+ */
+bool wrapper_touch_is_touched(void) {
+	// Lee el valor del contador del táctil
+	capt_touch_data_t data;
+	CAPT_GetTouchData(CAPT, &data);
+	return data.count < 30;
+}

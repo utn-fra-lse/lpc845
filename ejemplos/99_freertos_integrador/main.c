@@ -23,6 +23,8 @@ int main(void) {
 	xTaskCreate(task_animation, "Animation", tskANIMATION_STACK, NULL, tskANIMATION_PRIORITY, NULL);
 	xTaskCreate(task_blinky, "Blinky LED", tskBLINKY_STACK, NULL, tskBLINKY_PRIORITY, NULL);
 	xTaskCreate(task_buzzer, "Buzzer", tskBUZZER_STACK, NULL, tskBUZZER_PRIORITY, NULL);
+	xTaskCreate(task_counter, "Counter", tskCOUNTER_STACK, NULL, tskCOUNTER_PRIORITY, NULL);
+	xTaskCreate(task_counter_btns, "Counter Btns", tskCOUNTER_BTNS_STACK, NULL,tskCOUNTER_BTNS_PRIORITY, NULL);
 
 	vTaskStartScheduler();
 }

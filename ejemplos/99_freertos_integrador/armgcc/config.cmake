@@ -40,3 +40,4 @@ set(CONFIG_DSP NO_DSP)
 set(CONFIG_CORE_ID core0)
 
 set(CONFIG_USE_driver_pint true)
+set(CONFIG_USE_driver_capt true)

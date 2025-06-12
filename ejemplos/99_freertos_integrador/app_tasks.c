@@ -13,6 +13,12 @@ xQueueHandle queue_display;
 xSemaphoreHandle semphr_buzz;
 // Semáforo para interrupción del user button
 xSemaphoreHandle semphr_usr;
+// Semáforo para interrupción del touch
+xSemaphoreHandle semphr_touch;
+// Semáforo para contador
+xSemaphoreHandle semphr_counter;
+// Semáforo mutex para el display
+xSemaphoreHandle semphr_mutex;
 
 // Handler para la tarea de display write
 TaskHandle_t handle_display;
@@ -44,6 +50,8 @@ void task_init(void *params) {
 	// Inicializo I2C y Bh1750
 	wrapper_i2c_init();
 	wrapper_bh1750_init();
+	// Inicializo el pulsador capacitivo
+	wrapper_touch_init();
 
 	// Inicializo colas
 	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
@@ -53,6 +61,9 @@ void task_init(void *params) {
 	// Inicializo semáforos
 	semphr_buzz = xSemaphoreCreateBinary();
 	semphr_usr = xSemaphoreCreateBinary();
+	semphr_touch = xSemaphoreCreateBinary();
+	semphr_counter = xSemaphoreCreateCounting(99, 30);
+	semphr_mutex = xSemaphoreCreateMutex();
 
 	// Elimino tarea para liberar recursos
 	vTaskDelete(NULL);
@@ -107,8 +118,11 @@ void task_display_write(void *params) {
 		// Veo cual tengo que mostrar
 		val = (variable == kDISPLAY_TEMP)? data.temp_raw : data.ref_raw;
 		val = 30 * val / 4095;
-		// Escribo en la cola del display
+		// Escribo en la cola del display si puedo tomar el mutex
+		xSemaphoreTake(semphr_mutex, portMAX_DELAY);
 		xQueueOverwrite(queue_display, &val);
+		xSemaphoreGive(semphr_mutex);
+
 		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 }
@@ -185,13 +199,13 @@ void task_bh1750(void *params) {
 void task_animation(void *params) {
 	// Segmentos usados
 	gpio_t pins[] = { {SEG_A}, {SEG_B}, {SEG_C}, {SEG_D}, {SEG_E}, {SEG_F} };
-	gpio_t isp_btn = {ISP_BTN};
 
 	while(1) {
 		// Reviso el estado del pulsador
-		if(!wrapper_btn_get_with_debouncing_with_pull_up(isp_btn)) {
+		if(!wrapper_btn_get_with_debouncing_with_pull_up((gpio_t){ISP_BTN})) {
 			// Si no está presionado, libero la tarea
 			vTaskResume(handle_display);
+			vTaskDelay(pdMS_TO_TICKS(100));
 			continue;
 		}
 		// Suspendo la tarea que dibuja los numeros
@@ -237,5 +251,46 @@ void task_buzzer(void *params) {
 		xSemaphoreTake(semphr_buzz, portMAX_DELAY);
 		// Conmuto el buzzer
 		wrapper_output_toggle((gpio_t){BUZZER});
+	}
+}
+
+/**
+ * @brief Tarea que decrementa el contador
+ */
+void task_counter(void *params) {
+
+	while(1) {
+		// Decrementa la cuenta cada un segundo
+		xSemaphoreTake(semphr_counter, 0);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+	}
+}
+
+/**
+ * @brief Tarea que manualmente controla el contador
+ */
+void task_counter_btns(void *params) {
+
+	while(1) {
+		// Intenta tomar el semáforo
+		xSemaphoreTake(semphr_touch, portMAX_DELAY);
+		// Toma el mutex para bloquear la otra tarea que escribe el display
+		xSemaphoreTake(semphr_mutex, portMAX_DELAY);
+		// Verifica qué pulsador se presionó
+		if(wrapper_btn_get_with_debouncing_with_pull_up((gpio_t){S1_BTN})) {
+			// Decrementa la cuenta del semáforo
+			xSemaphoreTake(semphr_counter, 0);
+		}
+		else if(wrapper_btn_get_with_debouncing_with_pull_up((gpio_t){S2_BTN})) {
+			// Incrementa la cuenta del semáforo
+			xSemaphoreGive(semphr_counter);
+		}
+		// Escribe en el display
+		uint16_t data = uxSemaphoreGetCount(semphr_counter);
+		xQueueOverwrite(queue_display, &data);
+		// Demora chica para evitar que detecte muy rápido que se presionó
+		vTaskDelay(pdMS_TO_TICKS(30));
+		// Devuelve el mutex
+		xSemaphoreGive(semphr_mutex);
 	}
 }

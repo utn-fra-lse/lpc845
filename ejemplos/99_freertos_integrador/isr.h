@@ -9,6 +9,7 @@
 extern xQueueHandle queue_adc;
 extern xSemaphoreHandle semphr_buzz;
 extern xSemaphoreHandle semphr_usr;
+extern xSemaphoreHandle semphr_touch;
 
 // Prototipos de callbacks
 
