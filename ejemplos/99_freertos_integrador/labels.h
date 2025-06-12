@@ -9,8 +9,8 @@
 #define LED			    GPIO, 0, 29
 // Pin para el LED azul
 #define BLED        GPIO, 1, 1
-// Pin para el LED verde
-#define GLED        GPIO, 1, 2
+// Pin para el LED rojo
+#define RLED        GPIO, 1, 2
 
 // Etiquetas para los pines del 7 segmentos
 
@@ -48,12 +48,6 @@ typedef struct {
 	uint16_t temp_raw;
 	uint16_t ref_raw;
 } adc_data_t;
-
-// Estructura para datos de temperatura
-typedef struct {
-	float temp_lm35;
-	float temp_ref;
-} temp_data_t;
 
 // Enum para indicar que se muestra en el display
 typedef enum {

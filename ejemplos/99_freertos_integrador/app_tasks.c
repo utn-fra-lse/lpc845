@@ -4,8 +4,6 @@
 xQueueHandle queue_adc;
 // Cola para selecion de valor para el display
 xQueueHandle queue_display_variable;
-// Cola para datos de temperatura
-xQueueHandle queue_temp;
 // Cola para datos de luminosidad
 xQueueHandle queue_lux;
 // Cola para datos del display
@@ -27,7 +25,7 @@ void task_init(void *params) {
 	wrapper_gpio_init(0);
 	wrapper_gpio_init(1);
 	// Inicialización del LED
-	wrapper_output_init((gpio_t){BLED}, true);
+	// wrapper_output_init((gpio_t){BLED}, true);
 	// Inicialización del buzzer
 	wrapper_output_init((gpio_t){BUZZER}, false);
 	// Inicialización del enable del CNY70
@@ -50,9 +48,8 @@ void task_init(void *params) {
 	// Inicializo colas
 	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
 	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
-	queue_temp = xQueueCreate(1, sizeof(temp_data_t));
 	queue_lux = xQueueCreate(1, sizeof(uint16_t));
-	queue_display = xQueueCreate(1, sizeof(uint8_t));
+	queue_display = xQueueCreate(1, sizeof(uint16_t));
 	// Inicializo semáforos
 	semphr_buzz = xSemaphoreCreateBinary();
 	semphr_usr = xSemaphoreCreateBinary();
@@ -100,23 +97,17 @@ void task_display_write(void *params) {
 	// Valores de ADC
 	adc_data_t data = {0};
 	// Valor a mostrar
-	uint8_t val = 0;
+	uint16_t val = 0;
 
 	while(1) {
 		// Veo que variable hay que mostrar
 		xQueuePeek(queue_display_variable, &variable, portMAX_DELAY);
 		// Leo los datos del ADC
 		xQueuePeek(queue_adc, &data, portMAX_DELAY);
-		// Calculo las temperaturas
-		temp_data_t temps = {
-			.temp_lm35 = (30.0 * data.temp_raw / 4095.0),
-			.temp_ref = (30.0 * data.ref_raw / 4095.0)
-		};
-		// Mando a la cola para el PWM
-		xQueueOverwrite(queue_temp, &temps);
 		// Veo cual tengo que mostrar
-		val = (variable == kDISPLAY_TEMP)? (uint8_t) temps.temp_lm35 : (uint8_t) temps.temp_ref;
-		// Escribo en la cola
+		val = (variable == kDISPLAY_TEMP)? data.temp_raw : data.ref_raw;
+		val = 30 * val / 4095;
+		// Escribo en la cola del display
 		xQueueOverwrite(queue_display, &val);
 		vTaskDelay(pdMS_TO_TICKS(50));
 	}
@@ -149,15 +140,25 @@ void task_display(void *params) {
  */
 void task_pwm(void *params) {
 	// Variable para guardar los datos del ADC
-	temp_data_t temps = {0};
+	adc_data_t data = {0};
 
 	while(1) {
 		// Bloqueo hasta que haya algo que leer
-		xQueueReceive(queue_temp, &temps, portMAX_DELAY);
+		xQueuePeek(queue_adc, &data, portMAX_DELAY);
 		// Calculo la diferencia
-		float err = 5 * (temps.temp_ref - temps.temp_lm35);
+		int16_t err = 100 * (data.ref_raw - data.temp_raw) / 4095;
 		// Actualizo el duty
-		wrapper_pwm_update((int16_t)err);
+		if(err > 0) {
+			// Referencia por arriba, quiero calentar -> LED rojo
+			wrapper_pwm_update_bled(0);
+			wrapper_pwm_update_rled(err);
+		}
+		else {
+			// Referencia por debajo, quiero enfriar -> LED azul
+			wrapper_pwm_update_rled(0);
+			wrapper_pwm_update_bled(-err);
+		}
+		vTaskDelay(pdMS_TO_TICKS(20));
 	}
 }
 
@@ -222,7 +223,7 @@ void task_blinky(void *params) {
 		// Máximo es aprox 30000 entonces 3000 ms como máximo
 		blocking_time /= 10;
 		// Conmuto salida
-		wrapper_output_toggle(led);
+		// wrapper_output_toggle(led);
 		// Bloqueo el tiempo que se indique de la cola
 		vTaskDelay(pdMS_TO_TICKS(blocking_time));
 	}

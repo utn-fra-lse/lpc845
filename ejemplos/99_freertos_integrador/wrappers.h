@@ -28,7 +28,8 @@ void wrapper_gpio_enable_irq(gpio_t gpio, pint_pin_enable_t edge, pint_cb_t call
 void wrapper_display_init(void);
 void wrapper_display_write(uint8_t number);
 void wrapper_pwm_init(void);
-void wrapper_pwm_update(int16_t duty);
+void wrapper_pwm_update_bled(int16_t duty);
+void wrapper_pwm_update_rled(int16_t duty);
 void wrapper_i2c_init(void);
 void wrapper_bh1750_init(void);
 float wrapper_bh1750_read(void);
