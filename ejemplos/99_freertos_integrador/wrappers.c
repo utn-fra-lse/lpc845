@@ -163,33 +163,33 @@ void wrapper_pwm_init(void) {
 }
 
 /**
+ * @brief Wrapper privado para inicializar el PWM
+ * @param out salida de SCTimer
+ * @param duty ancho de pulso de 0 a 100
+ * @param event número de evento del PWM
+ */
+static void wrapper_pwm_update_led(sctimer_out_t out, int16_t duty, uint32_t event) {
+	// Verifico que no se haya excedido de los limites
+	if(duty < 0) { duty = 0; }
+	else if(duty > 100) { duty = 100; }
+	// Actualizo el duty
+	SCTIMER_UpdatePwmDutycycle(SCT0, out, duty, event);
+}
+
+/**
  * @brief Wrapper para actualizar el valor de duty del PWM del LED azul
  */
 void wrapper_pwm_update_bled(int16_t duty) {
-	// Verifico que no se haya excedido de los limites
-	if(duty < 0) {
-		duty = 0;
-	}
-	else if(duty > 100) {
-		duty = 100;
-	}
-	// Actualizo el duty
-	SCTIMER_UpdatePwmDutycycle(SCT0, kSCTIMER_Out_0, duty, pwm_bled_event);
+	// Invoco al wrapper general
+	wrapper_pwm_update_led(kSCTIMER_Out_0, duty, pwm_bled_event);
 }
 
 /**
  * @brief Wrapper para actualizar el valor de duty del PWM del LED rojo
  */
 void wrapper_pwm_update_rled(int16_t duty) {
-	// Verifico que no se haya excedido de los limites
-	if(duty < 0) {
-		duty = 0;
-	}
-	else if(duty > 100) {
-		duty = 100;
-	}
-	// Actualizo el duty
-	SCTIMER_UpdatePwmDutycycle(SCT0, kSCTIMER_Out_1, duty, pwm_rled_event);
+	// Invoco al wrapper general
+	wrapper_pwm_update_led(kSCTIMER_Out_1, duty, pwm_rled_event);
 }
 
 /**
