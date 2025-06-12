@@ -17,6 +17,7 @@
 #define tskADC_READ_PRIORITY			(tskIDLE_PRIORITY + 1UL)
 #define tskBTN_PRIORITY						(tskIDLE_PRIORITY + 2UL)
 #define tskDISPLAY_WRITE_PRIORITY	(tskIDLE_PRIORITY + 1UL)
+#define tskDISPLAY_PRIORITY				(tskIDLE_PRIORITY + 1UL)
 #define tskPWM_PRIORITY						(tskIDLE_PRIORITY + 1UL)
 #define tskBH1750_PRIORITY				(tskIDLE_PRIORITY + 1UL)
 #define tskANIMATION_PRIORITY			(tskIDLE_PRIORITY + 1UL)
@@ -29,6 +30,7 @@
 #define tskADC_READ_STACK				(configMINIMAL_STACK_SIZE / 2)
 #define tskBTN_STACK						(configMINIMAL_STACK_SIZE)
 #define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
+#define tskDISPLAY_STACK				(configMINIMAL_STACK_SIZE)
 #define tskPWM_STACK						(configMINIMAL_STACK_SIZE)
 #define tskBH1750_STACK					(configMINIMAL_STACK_SIZE)
 #define tskANIMATION_STACK			(3 * configMINIMAL_STACK_SIZE / 2)
@@ -43,14 +45,12 @@ void task_init(void *params);
 void task_adc_read(void *params);
 void task_btn(void *params);
 void task_display_write(void *params);
+void task_display(void *params);
 void task_pwm(void *params);
 void task_bh1750(void *params);
 void task_animation(void *params);
 void task_blinky(void *params);
 void task_buzzer(void *params);
-void task_gblinky(void *params);
-
-void task_hello(void *params);
 
 /**
  * @brief Wrapper que verifica el estado de un pulsador con pull-up

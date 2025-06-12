@@ -17,6 +17,7 @@ int main(void) {
 	xTaskCreate(task_adc_read, "ADC", tskADC_READ_STACK, NULL, tskADC_READ_PRIORITY, NULL);
 	xTaskCreate(task_btn, "Button", tskBTN_STACK, NULL, tskBTN_PRIORITY, NULL);
 	xTaskCreate(task_display_write, "Write", tskDISPLAY_WRITE_STACK, NULL, tskDISPLAY_WRITE_PRIORITY, &handle_display);
+	xTaskCreate(task_display, "Display", tskDISPLAY_STACK, NULL, tskDISPLAY_PRIORITY, NULL);
 	xTaskCreate(task_pwm, "PWM", tskPWM_STACK, NULL, tskPWM_PRIORITY, NULL);
 	xTaskCreate(task_bh1750, "BH1750", tskBH1750_STACK, NULL, tskBH1750_PRIORITY, NULL);
 	xTaskCreate(task_animation, "Animation", tskANIMATION_STACK, NULL, tskANIMATION_PRIORITY, NULL);

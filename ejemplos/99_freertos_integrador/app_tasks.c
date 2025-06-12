@@ -8,6 +8,8 @@ xQueueHandle queue_display_variable;
 xQueueHandle queue_temp;
 // Cola para datos de luminosidad
 xQueueHandle queue_lux;
+// Cola para datos del display
+xQueueHandle queue_display;
 
 // Semáforo para interrupción del infrarojo
 xSemaphoreHandle semphr_buzz;
@@ -50,6 +52,7 @@ void task_init(void *params) {
 	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
 	queue_temp = xQueueCreate(1, sizeof(temp_data_t));
 	queue_lux = xQueueCreate(1, sizeof(uint16_t));
+	queue_display = xQueueCreate(1, sizeof(uint8_t));
 	// Inicializo semáforos
 	semphr_buzz = xSemaphoreCreateBinary();
 	semphr_usr = xSemaphoreCreateBinary();
@@ -98,8 +101,6 @@ void task_display_write(void *params) {
 	adc_data_t data = {0};
 	// Valor a mostrar
 	uint8_t val = 0;
-	// GPIOs para pines comunes de los segmentos
-	gpio_t com_1 = {COM_1}, com_2 = {COM_2};
 
 	while(1) {
 		// Veo que variable hay que mostrar
@@ -114,22 +115,31 @@ void task_display_write(void *params) {
 		// Mando a la cola para el PWM
 		xQueueOverwrite(queue_temp, &temps);
 		// Veo cual tengo que mostrar
-		if(variable == kDISPLAY_TEMP) {
-			// Calculo la temperatura
-			val = (uint8_t) temps.temp_lm35;
-		}
-		else {
-			// Calculo la referencia
-			val = (uint8_t) temps.temp_ref;
-		}
-		// Muestro el numero
+		val = (variable == kDISPLAY_TEMP)? (uint8_t) temps.temp_lm35 : (uint8_t) temps.temp_ref;
+		// Escribo en la cola
+		xQueueOverwrite(queue_display, &val);
+		vTaskDelay(pdMS_TO_TICKS(50));
+	}
+}
+
+/**
+ * @brief Tarea que escribe un número en el display
+ */
+void task_display(void *params) {
+	// Variable con el dato para escribir
+	uint8_t data;
+
+	while(1) {
+		// Mira el dato que haya en la cola
+		if(!xQueuePeek(queue_display, &data, pdMS_TO_TICKS(100))) { continue; }
+		// Muestro el número
 		wrapper_display_off();
-		wrapper_display_write((uint8_t)(val / 10));
-		wrapper_display_on(com_1);
+		wrapper_display_write((uint8_t)(data / 10));
+		wrapper_display_on((gpio_t){COM_1});
 		vTaskDelay(pdMS_TO_TICKS(10));
 		wrapper_display_off();
-		wrapper_display_write((uint8_t)(val % 10));
-		wrapper_display_on(com_2);
+		wrapper_display_write((uint8_t)(data % 10));
+		wrapper_display_on((gpio_t){COM_2});
 		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
