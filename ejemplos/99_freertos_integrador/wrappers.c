@@ -7,24 +7,24 @@ static uint32_t pwm_led_event = 0;
  * @brief Wrapper para inicializacion del ADC
  */
 void wrapper_adc_init(void) {
-    // Activo clock de matriz de conmutacion
-    CLOCK_EnableClock(kCLOCK_Swm);
-    // Configuro la funcion de ADC en el canal del LM35
-//    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN7, true);
-    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN0, true);
-    // Configuro la funcion de ADC en el canal del potenciometro
-    SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN8, true);
-    // Desactivo clock de matriz de conmutacion
-    CLOCK_DisableClock(kCLOCK_Swm);
+	// Activo clock de matriz de conmutacion
+	CLOCK_EnableClock(kCLOCK_Swm);
+	// Configuro la funcion de ADC en el canal del LM35
+	// SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN7, true);
+	SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN0, true);
+	// Configuro la funcion de ADC en el canal del potenciometro
+	SWM_SetFixedPinSelect(SWM0, kSWM_ADC_CHN8, true);
+	// Desactivo clock de matriz de conmutacion
+	CLOCK_DisableClock(kCLOCK_Swm);
 
-    // Elijo clock desde el FRO con divisor de 1 (30MHz)
-    CLOCK_Select(kADC_Clk_From_Fro);
-    CLOCK_SetClkDivider(kCLOCK_DivAdcClk, 1);
+	// Elijo clock desde el FRO con divisor de 1 (30MHz)
+	CLOCK_Select(kADC_Clk_From_Fro);
+	CLOCK_SetClkDivider(kCLOCK_DivAdcClk, 1);
 
-    // Prendo el ADC
-    POWER_DisablePD(kPDRUNCFG_PD_ADC0);
+	// Prendo el ADC
+	POWER_DisablePD(kPDRUNCFG_PD_ADC0);
 
-    // Obtengo frecuencia deseada y calibro ADC
+	// Obtengo frecuencia deseada y calibro ADC
 	uint32_t frequency = CLOCK_GetFreq(kCLOCK_Fro) / CLOCK_GetClkDivider(kCLOCK_DivAdcClk);
 	ADC_DoSelfCalibration(ADC0, frequency);
 	// Configuracion por defecto del ADC
@@ -45,8 +45,8 @@ void wrapper_adc_init(void) {
 	ADC_EnableConvSeqA(ADC0, true);
 
 	// Habilito interrupcion para el ADC y en el NVIC
-    ADC_EnableInterrupts(ADC0, kADC_ConvSeqAInterruptEnable);
-    NVIC_EnableIRQ(ADC0_SEQA_IRQn);
+	ADC_EnableInterrupts(ADC0, kADC_ConvSeqAInterruptEnable);
+	NVIC_EnableIRQ(ADC0_SEQA_IRQn);
 }
 
 /**
@@ -55,10 +55,27 @@ void wrapper_adc_init(void) {
 void wrapper_btn_init(void) {
 	// Inicializo botones
 	gpio_pin_config_t config = { kGPIO_DigitalInput };
-	uint32_t pins[] = { USR_BTN, ISP_BTN, S1_BTN, S2_BTN };
-	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
-		GPIO_PinInit(GPIO, 0, pins[i], &config);
+	gpio_t inputs[] = { {S1_BTN}, {S2_BTN}, {USR_BTN}, {ISP_BTN}, {CNY70} };
+	for(uint32_t i = 0; i < sizeof(inputs) / sizeof(gpio_t); i++) { 
+		GPIO_PinInit(GPIO_DESTRUCT(inputs[i]), &config);
 	}
+}
+
+/**
+ * @brief Wrapper para habilitar una interrupción en una entrada
+ * @param gpio estructura de GPIO
+ * @param edge kPINT_PinIntEnableRiseEdge, kPINT_PinIntEnableFallEdge, kPINT_PinIntEnableBothEdges
+ */
+void wrapper_gpio_enable_irq(gpio_t gpio, pint_pin_enable_t edge, pint_cb_t callback) {
+	// Variable para guardar el numero de interrupción
+	static uint32_t pint_n = 0;
+	// Solo la primera vez que se configura la interrupción
+	if(pint_n == 0) { PINT_Init(PINT); }
+	// Asigno el pin a la interrupción
+	SYSCON->PINTSEL[pint_n] = wrapper_gpio_get_pin(gpio);
+	// PINT interrupt para el flanco indicado
+	PINT_PinInterruptConfig(PINT, (pint_pin_int_t)pint_n, edge, callback);
+	PINT_EnableCallbackByIndex(PINT, (pint_pin_int_t)pint_n++);
 }
 
 /**
@@ -67,10 +84,9 @@ void wrapper_btn_init(void) {
 void wrapper_display_init(void) {
 	// Inicializo los pines como salidas
 	gpio_pin_config_t config = { kGPIO_DigitalOutput, true };
-	uint32_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G, COM_1, COM_2 };
-	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
-		GPIO_PinInit(GPIO, 0, pins[i], &config);
-		GPIO_PinWrite(GPIO, 0, pins[i], 1);
+	gpio_t pins[] = { {SEG_A}, {SEG_B}, {SEG_C}, {SEG_D}, {SEG_E}, {SEG_F}, {SEG_G}, {COM_1}, {COM_2} };
+	for(uint8_t i = 0; i < sizeof(pins) / sizeof(gpio_t); i++) {
+		GPIO_PinInit(GPIO_DESTRUCT(pins[i]), &config);
 	}
 }
 
@@ -82,12 +98,12 @@ void wrapper_display_write(uint8_t number) {
 	// Array con valores para los pines
 	uint8_t values[] = { ~0x3f, ~0x6, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x7, ~0x7f, ~0x6f };
 	// Array con los segmentos
-	uint32_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G };
+	gpio_t pins[] = { {SEG_A}, {SEG_B}, {SEG_C}, {SEG_D}, {SEG_E}, {SEG_F}, {SEG_G} };
 
-	for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint32_t); i++) {
+	for(uint8_t i = 0; i < sizeof(pins) / sizeof(gpio_t); i++) {
 		// Escribo el valor del bit en el segmento que corresponda
 		uint32_t val = (values[number] & (1 << i))? 1 : 0;
-		GPIO_PinWrite(GPIO, 0, pins[i], val);
+		GPIO_PinWrite(GPIO_DESTRUCT(pins[i]), val);
 	}
 }
 
@@ -97,7 +113,7 @@ void wrapper_display_write(uint8_t number) {
 void wrapper_pwm_init(void) {
 	// Conecto la salida 4 del SCT al LED azul
     CLOCK_EnableClock(kCLOCK_Swm);
-    SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT4, kSWM_PortPin_P0_0 + LED);
+    SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT4, kSWM_PortPin_P0_0 + wrapper_gpio_get_pin((gpio_t){LED}));
     CLOCK_DisableClock(kCLOCK_Swm);
 
     // Eligo el clock para el Timer
@@ -109,19 +125,19 @@ void wrapper_pwm_init(void) {
 
     // Configuro el PWM
     sctimer_pwm_signal_param_t pwm_config = {
-		.output = kSCTIMER_Out_4,		// Salida del Timer
-		.level = kSCTIMER_HighTrue,		// Logica negativa
-		.dutyCyclePercent = 0			// 50% de ancho de pulso
+			.output = kSCTIMER_Out_4,		// Salida del Timer
+			.level = kSCTIMER_HighTrue,		// Logica negativa
+			.dutyCyclePercent = 0			// 50% de ancho de pulso
     };
 
     // Inicializo el PWM
     SCTIMER_SetupPwm(
-		SCT0,
-		&pwm_config,
-		kSCTIMER_CenterAlignedPwm,
-		1000,
-		sctimer_clock,
-		&pwm_led_event
+			SCT0,
+			&pwm_config,
+			kSCTIMER_CenterAlignedPwm,
+			1000,
+			sctimer_clock,
+			&pwm_led_event
 	);
     // Inicializo el Timer
     SCTIMER_StartTimer(SCT0, kSCTIMER_Counter_U);
@@ -148,17 +164,17 @@ void wrapper_pwm_update(int16_t duty) {
 void wrapper_i2c_init(void) {
 	// Inicializo el clock del I2C1
 	CLOCK_Select(kI2C1_Clk_From_MainClk);
-    // Asigno las funciones de I2C1 a los pines 26 y 27
+	// Asigno las funciones de I2C1 a los pines 26 y 27
 	CLOCK_EnableClock(kCLOCK_Swm);
-    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_27);
-    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SCL, kSWM_PortPin_P0_26);
-    CLOCK_DisableClock(kCLOCK_Swm);
+	SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_27);
+	SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SCL, kSWM_PortPin_P0_26);
+	CLOCK_DisableClock(kCLOCK_Swm);
 
-    // Configuracion de master para el I2C
-    i2c_master_config_t config;
-    I2C_MasterGetDefaultConfig(&config);
-    config.baudRate_Bps = 400000;
-    I2C_MasterInit(I2C1_BASE, &config, SystemCoreClock);
+	// Configuracion de master para el I2C
+	i2c_master_config_t config;
+	I2C_MasterGetDefaultConfig(&config);
+	config.baudRate_Bps = 400000;
+	I2C_MasterInit(I2C1, &config, SystemCoreClock);
 }
 
 /**

@@ -6,6 +6,13 @@ xQueueHandle queue_adc;
 xQueueHandle queue_display_variable;
 // Cola para datos de temperatura
 xQueueHandle queue_temp;
+// Cola para datos de luminosidad
+xQueueHandle queue_lux;
+
+// Semáforo para interrupción del infrarojo
+xSemaphoreHandle semphr_buzz;
+// Semáforo para interrupción del user button
+xSemaphoreHandle semphr_usr;
 
 // Handler para la tarea de display write
 TaskHandle_t handle_display;
@@ -16,12 +23,22 @@ TaskHandle_t handle_display;
 void task_init(void *params) {
 	// Inicializacion de GPIO
 	wrapper_gpio_init(0);
+	wrapper_gpio_init(1);
+	// Inicialización del LED
+	wrapper_output_init((gpio_t){BLED}, true);
+	// Inicialización del buzzer
+	wrapper_output_init((gpio_t){BUZZER}, false);
+	// Inicialización del enable del CNY70
+	wrapper_output_init((gpio_t){CNY70_EN}, true);
 	// Configuro el ADC
 	wrapper_adc_init();
 	// Configuro el display
 	wrapper_display_init();
 	// Configuro botones
 	wrapper_btn_init();
+	// Configuro interrupción por flancos para el infrarojo y para el botón del user
+	wrapper_gpio_enable_irq((gpio_t){CNY70}, kPINT_PinIntEnableBothEdges, cny70_callback);
+	wrapper_gpio_enable_irq((gpio_t){USR_BTN}, kPINT_PinIntEnableFallEdge, usr_callback);
 	// Inicializo el PWM
 	wrapper_pwm_init();
 	// Inicializo I2C y Bh1750
@@ -32,10 +49,10 @@ void task_init(void *params) {
 	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
 	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
 	queue_temp = xQueueCreate(1, sizeof(temp_data_t));
-
-	vQueueAddToRegistry(queue_adc, "ADC");
-	vQueueAddToRegistry(queue_display_variable, "Display");
-	vQueueAddToRegistry(queue_temp, "Temperature");
+	queue_lux = xQueueCreate(1, sizeof(uint16_t));
+	// Inicializo semáforos
+	semphr_buzz = xSemaphoreCreateBinary();
+	semphr_usr = xSemaphoreCreateBinary();
 
 	// Elimino tarea para liberar recursos
 	vTaskDelete(NULL);
@@ -50,7 +67,7 @@ void task_adc_read(void *params) {
 		// Inicio una conversion
 		ADC_DoSoftwareTriggerConvSeqA(ADC0);
 		// Bloqueo la tarea por 250 ms
-		vTaskDelay(250);
+		vTaskDelay(pdMS_TO_TICKS(250));
 	}
 }
 
@@ -62,25 +79,12 @@ void task_btn(void *params) {
 	display_variable_t variable = kDISPLAY_TEMP;
 
 	while(1) {
-		// Veo que boton se presiono
-		if(!wrapper_btn_get(USR_BTN)) {
-			// Antirebote
-			vTaskDelay(20);
-			if(!wrapper_btn_get(USR_BTN)) {
-				// USR Button para temperatura
-				variable = kDISPLAY_TEMP;
-			}
-		}
-		else if(!wrapper_btn_get(ISP_BTN)) {
-			// Antirebote
-			vTaskDelay(20);
-			if(!wrapper_btn_get(ISP_BTN)) {
-				// ISP Button para la referencia
-				variable = kDISPLAY_REF;
-			}
-		}
-		// Mando datos en la cola
+		// Escribe el dato en la cola
 		xQueueOverwrite(queue_display_variable, &variable);
+		// Intenta tomar el semáforo
+		xSemaphoreTake(semphr_usr, portMAX_DELAY);
+		// Si se presionó, cambio la variable
+		variable = (variable == kDISPLAY_TEMP)? kDISPLAY_REF : kDISPLAY_TEMP;
 	}
 }
 
@@ -94,6 +98,8 @@ void task_display_write(void *params) {
 	adc_data_t data = {0};
 	// Valor a mostrar
 	uint8_t val = 0;
+	// GPIOs para pines comunes de los segmentos
+	gpio_t com_1 = {COM_1}, com_2 = {COM_2};
 
 	while(1) {
 		// Veo que variable hay que mostrar
@@ -110,7 +116,6 @@ void task_display_write(void *params) {
 		// Veo cual tengo que mostrar
 		if(variable == kDISPLAY_TEMP) {
 			// Calculo la temperatura
-//			val = (uint8_t)(100 * (3.3 * data.temp_raw / 4095.0));
 			val = (uint8_t) temps.temp_lm35;
 		}
 		else {
@@ -120,12 +125,12 @@ void task_display_write(void *params) {
 		// Muestro el numero
 		wrapper_display_off();
 		wrapper_display_write((uint8_t)(val / 10));
-		wrapper_display_on(COM_1);
-		vTaskDelay(10);
+		wrapper_display_on(com_1);
+		vTaskDelay(pdMS_TO_TICKS(10));
 		wrapper_display_off();
 		wrapper_display_write((uint8_t)(val % 10));
-		wrapper_display_on(COM_2);
-		vTaskDelay(10);
+		wrapper_display_on(com_2);
+		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
 
@@ -151,13 +156,15 @@ void task_pwm(void *params) {
  */
 void task_bh1750(void *params) {
 	// Valor de intensidad luminica
-	float lux = 0.0;
+	uint16_t lux = 0;
 
 	while(1) {
 		// Bloqueo por 160 ms (requisito)
-		vTaskDelay(200);
+		vTaskDelay(pdMS_TO_TICKS(200));
 		// Leo el valor de lux
 		lux = wrapper_bh1750_read();
+		// Muestro por consola
+		xQueueOverwrite(queue_lux, &lux);
 	}
 }
 
@@ -166,59 +173,60 @@ void task_bh1750(void *params) {
  */
 void task_animation(void *params) {
 	// Segmentos usados
-	uint8_t pins[] = { SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F };
+	gpio_t pins[] = { {SEG_A}, {SEG_B}, {SEG_C}, {SEG_D}, {SEG_E}, {SEG_F} };
+	gpio_t isp_btn = {ISP_BTN};
 
 	while(1) {
-		// Veo si esta apretado el pulsador
-		if(!wrapper_btn_get(S1_BTN)) {
-			// Verifico que no haya sido un falso cero
-			vTaskDelay(20);
-			if(!wrapper_btn_get(S1_BTN)) {
-				// Suspendo la tarea que dibuja los numeros
-				vTaskSuspend(handle_display);
-				// Prendo ambos segmentos
-				wrapper_display_on(COM_1);
-				wrapper_display_on(COM_2);
-				// Prendo de a uno los segmentos
-				for(uint8_t i = 0; i < sizeof(pins) / sizeof(uint8_t); i++) {
-					// Apago todos los segmentos
-					wrapper_display_segments_off();
-					wrapper_display_segment_on(pins[i]);
-					vTaskDelay(50);
-				}
-			}
-		}
-		else {
-			// Libero la tarea
+		// Reviso el estado del pulsador
+		if(!wrapper_btn_get_with_debouncing_with_pull_up(isp_btn)) {
+			// Si no está presionado, libero la tarea
 			vTaskResume(handle_display);
+			continue;
+		}
+		// Suspendo la tarea que dibuja los numeros
+		vTaskSuspend(handle_display);
+		// Prendo ambos segmentos
+		wrapper_display_on_both();
+		// Prendo de a uno los segmentos
+		for(uint8_t i = 0; i < sizeof(pins) / sizeof(gpio_t); i++) {
+			// Apago todos los segmentos
+			wrapper_display_segments_off();
+			wrapper_display_segment_on(pins[i]);
+			vTaskDelay(pdMS_TO_TICKS(50));
 		}
 	}
 }
 
 /**
- * @brief Handler para la interrupcion del ADC Sequence A
+ * @brief Tarea que parpadea el LED de acuerdo a la intensidad lumínica
  */
-void ADC_SEQA_IRQHandler(void) {
-	// Variable de cambio de contexto
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-	// Verifico que se haya terminado la conversion correctamente
-	if(kADC_ConvSeqAInterruptFlag == (kADC_ConvSeqAInterruptFlag & ADC_GetStatusFlags(ADC0))) {
-		// Limpio flag de interrupcion
-		ADC_ClearStatusFlags(ADC0, kADC_ConvSeqAInterruptFlag);
-		// Resultado de conversion
-		adc_result_info_t temp_info, ref_info;
-		// Leo el valor del ADC
-		ADC_GetChannelConversionResult(ADC0, REF_POT_CH, &ref_info);
-		// Leo el valor del ADC
-		ADC_GetChannelConversionResult(ADC0, LM35_CH, &temp_info);
-		// Estructura de datos para mandar
-		adc_data_t data = {
-			.temp_raw = (uint16_t)temp_info.result,
-			.ref_raw = (uint16_t)ref_info.result
-		};
-		// Mando por la cola los datos
-		xQueueOverwriteFromISR(queue_adc, &data, &xHigherPriorityTaskWoken);
-		// Veo si hace falta un cambio de contexto
-		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+void task_blinky(void *params) {
+	// Variable para guardar el tiempo en ms de bloqueo
+	uint16_t blocking_time;
+	// Salida con la que trabajar
+	gpio_t led = {BLED};
+
+	while(1) {
+		// Lee el último valor de luminosidad
+		xQueuePeek(queue_lux, &blocking_time, portMAX_DELAY);
+		// Máximo es aprox 30000 entonces 3000 ms como máximo
+		blocking_time /= 10;
+		// Conmuto salida
+		wrapper_output_toggle(led);
+		// Bloqueo el tiempo que se indique de la cola
+		vTaskDelay(pdMS_TO_TICKS(blocking_time));
+	}
+}
+
+/**
+ * @brief Tarea que hace sonar el buzzer
+ */
+void task_buzzer(void *params) {
+
+	while(1) {
+		// Intenta tomar el semáforo
+		xSemaphoreTake(semphr_buzz, portMAX_DELAY);
+		// Conmuto el buzzer
+		wrapper_output_toggle((gpio_t){BUZZER});
 	}
 }
