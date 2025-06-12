@@ -25,7 +25,7 @@ void task_init(void *params) {
 	wrapper_gpio_init(0);
 	wrapper_gpio_init(1);
 	// Inicialización del LED
-	// wrapper_output_init((gpio_t){BLED}, true);
+	wrapper_output_init((gpio_t){LED}, true);
 	// Inicialización del buzzer
 	wrapper_output_init((gpio_t){BUZZER}, false);
 	// Inicialización del enable del CNY70
@@ -214,8 +214,6 @@ void task_animation(void *params) {
 void task_blinky(void *params) {
 	// Variable para guardar el tiempo en ms de bloqueo
 	uint16_t blocking_time;
-	// Salida con la que trabajar
-	gpio_t led = {BLED};
 
 	while(1) {
 		// Lee el último valor de luminosidad
@@ -223,7 +221,7 @@ void task_blinky(void *params) {
 		// Máximo es aprox 30000 entonces 3000 ms como máximo
 		blocking_time /= 10;
 		// Conmuto salida
-		// wrapper_output_toggle(led);
+		wrapper_output_toggle((gpio_t){LED});
 		// Bloqueo el tiempo que se indique de la cola
 		vTaskDelay(pdMS_TO_TICKS(blocking_time));
 	}
