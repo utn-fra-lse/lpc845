@@ -13,25 +13,25 @@
 
 // Prioridades de tareas
 
-#define tskINIT_PRIORITY					(tskIDLE_PRIORITY + 3UL)
-#define tskADC_PRIORITY						(tskIDLE_PRIORITY + 1UL)
-#define tskBTN_PRIORITY						(tskIDLE_PRIORITY + 2UL)
-#define tskDISPLAY_WRITE_PRIORITY	(tskIDLE_PRIORITY + 1UL)
-#define tskDISPLAY_PRIORITY				(tskIDLE_PRIORITY + 1UL)
-#define tskPWM_PRIORITY						(tskIDLE_PRIORITY + 1UL)
-#define tskBH1750_PRIORITY				(tskIDLE_PRIORITY + 1UL)
-#define tskANIMATION_PRIORITY			(tskIDLE_PRIORITY + 1UL)
-#define tskBLINKY_PRIORITY				(tskIDLE_PRIORITY + 1UL)
-#define tskBUZZER_PRIORITY				(tskIDLE_PRIORITY + 2UL)
-#define tskCOUNTER_PRIORITY				(tskIDLE_PRIORITY + 1UL)
-#define tskCOUNTER_BTNS_PRIORITY	(tskIDLE_PRIORITY + 2UL)
+#define tskINIT_PRIORITY						(tskIDLE_PRIORITY + 3UL)
+#define tskADC_PRIORITY							(tskIDLE_PRIORITY + 1UL)
+#define tskDISPLAY_CHANGE_PRIORITY	(tskIDLE_PRIORITY + 2UL)
+#define tskCONTROL_PRIORITY					(tskIDLE_PRIORITY + 1UL)
+#define tskDISPLAY_PRIORITY					(tskIDLE_PRIORITY + 1UL)
+#define tskPWM_PRIORITY							(tskIDLE_PRIORITY + 1UL)
+#define tskBH1750_PRIORITY					(tskIDLE_PRIORITY + 1UL)
+#define tskANIMATION_PRIORITY				(tskIDLE_PRIORITY + 1UL)
+#define tskBLINKY_PRIORITY					(tskIDLE_PRIORITY + 1UL)
+#define tskBUZZER_PRIORITY					(tskIDLE_PRIORITY + 2UL)
+#define tskCOUNTER_PRIORITY					(tskIDLE_PRIORITY + 1UL)
+#define tskCOUNTER_BTNS_PRIORITY		(tskIDLE_PRIORITY + 2UL)
 
 // Stacks para tareas
 
 #define tskINIT_STACK						(3 * configMINIMAL_STACK_SIZE)
 #define tskADC_STACK						(configMINIMAL_STACK_SIZE)
-#define tskBTN_STACK						(configMINIMAL_STACK_SIZE)
-#define tskDISPLAY_WRITE_STACK	(configMINIMAL_STACK_SIZE)
+#define tskDISPLAY_CHANGE_STACK	(configMINIMAL_STACK_SIZE)
+#define tskCONTROL_STACK				(configMINIMAL_STACK_SIZE)
 #define tskDISPLAY_STACK				(3 * configMINIMAL_STACK_SIZE / 2)
 #define tskPWM_STACK						(3 * configMINIMAL_STACK_SIZE / 2)
 #define tskBH1750_STACK					(configMINIMAL_STACK_SIZE)
@@ -47,8 +47,8 @@ extern TaskHandle_t handle_display;
 // Prototipos de funciones
 void task_init(void *params);
 void task_adc(void *params);
-void task_btn(void *params);
-void task_display_write(void *params);
+void task_display_change(void *params);
+void task_control(void *params);
 void task_display(void *params);
 void task_pwm(void *params);
 void task_bh1750(void *params);

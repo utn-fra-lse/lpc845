@@ -85,7 +85,7 @@ void task_adc(void *params) {
 /**
  * @brief Lee los valores de los botones para definir que valor mostrar
  */
-void task_btn(void *params) {
+void task_display_change(void *params) {
 	// Dato para pasar
 	display_variable_t variable = kDISPLAY_TEMP;
 
@@ -102,7 +102,7 @@ void task_btn(void *params) {
 /**
  * @brief Escribe valores en el display
  */
-void task_display_write(void *params) {
+void task_control(void *params) {
 	// Variable a mostrar
 	display_variable_t variable = kDISPLAY_TEMP;
 	// Valores de ADC
@@ -258,7 +258,6 @@ void task_buzzer(void *params) {
  * @brief Tarea que decrementa el contador
  */
 void task_counter(void *params) {
-
 	while(1) {
 		// Decrementa la cuenta cada un segundo
 		xSemaphoreTake(semphr_counter, 0);
