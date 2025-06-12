@@ -72,7 +72,7 @@ void task_init(void *params) {
 /**
  * @brief Activa una secuencia de conversion cada 0.25 segundos
  */
-void task_adc_read(void *params) {
+void task_adc(void *params) {
 
 	while(1) {
 		// Inicio una conversion

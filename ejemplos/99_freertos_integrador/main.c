@@ -14,7 +14,7 @@ int main(void) {
 	// Creacion de tareas
 
 	xTaskCreate(task_init, "Init", tskINIT_STACK, NULL, tskINIT_PRIORITY, NULL);
-	xTaskCreate(task_adc_read, "ADC", tskADC_READ_STACK, NULL, tskADC_READ_PRIORITY, NULL);
+	xTaskCreate(task_adc, "ADC", tskADC_STACK, NULL, tskADC_PRIORITY, NULL);
 	xTaskCreate(task_btn, "Button", tskBTN_STACK, NULL, tskBTN_PRIORITY, NULL);
 	xTaskCreate(task_display_write, "Write", tskDISPLAY_WRITE_STACK, NULL, tskDISPLAY_WRITE_PRIORITY, &handle_display);
 	xTaskCreate(task_display, "Display", tskDISPLAY_STACK, NULL, tskDISPLAY_PRIORITY, NULL);
