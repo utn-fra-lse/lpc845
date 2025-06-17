@@ -27,6 +27,19 @@ TaskHandle_t handle_display;
  * @brief Inicializa todos los perifericos y colas
  */
 void task_init(void *params) {
+	// Inicializo semáforos
+	semphr_buzz = xSemaphoreCreateBinary();
+	semphr_usr = xSemaphoreCreateBinary();
+	semphr_touch = xSemaphoreCreateBinary();
+	semphr_counter = xSemaphoreCreateCounting(99, 30);
+	semphr_mutex = xSemaphoreCreateMutex();
+
+	// Inicializo colas
+	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
+	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
+	queue_lux = xQueueCreate(1, sizeof(uint16_t));
+	queue_display = xQueueCreate(1, sizeof(uint16_t));
+	
 	// Inicializacion de GPIO
 	wrapper_gpio_init(0);
 	wrapper_gpio_init(1);
@@ -52,18 +65,6 @@ void task_init(void *params) {
 	wrapper_bh1750_init();
 	// Inicializo el pulsador capacitivo
 	wrapper_touch_init();
-
-	// Inicializo colas
-	queue_adc = xQueueCreate(1, sizeof(adc_data_t));
-	queue_display_variable = xQueueCreate(1, sizeof(display_variable_t));
-	queue_lux = xQueueCreate(1, sizeof(uint16_t));
-	queue_display = xQueueCreate(1, sizeof(uint16_t));
-	// Inicializo semáforos
-	semphr_buzz = xSemaphoreCreateBinary();
-	semphr_usr = xSemaphoreCreateBinary();
-	semphr_touch = xSemaphoreCreateBinary();
-	semphr_counter = xSemaphoreCreateCounting(99, 30);
-	semphr_mutex = xSemaphoreCreateMutex();
 
 	// Elimino tarea para liberar recursos
 	vTaskDelete(NULL);
