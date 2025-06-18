@@ -283,5 +283,5 @@ bool wrapper_touch_is_touched(void) {
 	// Lee el valor del contador del táctil
 	capt_touch_data_t data;
 	CAPT_GetTouchData(CAPT, &data);
-	return data.count < 30;
+	return data.count < 15;
 }
